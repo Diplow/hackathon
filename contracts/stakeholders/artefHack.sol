@@ -4,8 +4,10 @@ contract ArtefHack is Role {
 
 	ContentStorage public contents;
 	MessageStorage public messages;
+	TargetingStorage public targetings;
 
-	function publish(bytes32 content) isRole('Publisher') returns (uint idx) {
+	function publish(bytes32 contentId, uint entertainment, uint information) isRole('Publisher') returns (uint idx) {
+		return contents.upsert(contentId, tx.origin, entertainment, information);
 	}
 
 	function advertise(bytes32 content, bytes32 message) isRole('Advertiser') returns (bool success) {
@@ -24,3 +26,21 @@ contract ArtefHack is Role {
 	function eval(bytes32 message, uint score) isRole('User') returns (bool success) {
 	}
 }
+
+// LVL 1
+// Publisher
+// Advertiser
+// publish
+// advertise
+
+// LVL 2
+// publish + pay
+// advertise + pay
+// visit + pay
+// DataProvider
+// eval
+
+// LVL 3
+// get more advertisers
+// get more content
+// get more users

@@ -11,9 +11,6 @@ contract UserStorage {
   mapping(address => User) private users;
   address[] private index;
 
-  event LogNewUser   (address indexed addr, uint idx, bytes32 gender, bytes32 city);
-  event LogUpdateUser(address indexed addr, uint idx, bytes32 gender, bytes32 city);
-
   function exists(address addr) public constant returns(bool isIndeed) {
     if (index.length == 0) return false;
 
@@ -29,13 +26,6 @@ contract UserStorage {
     users[addr].city = city;
     users[addr].idx = index.push(addr)-1;
 
-    LogNewUser(
-      addr,
-      users[addr].idx,
-      gender,
-      city
-    );
-
     return index.length-1;
   }
 
@@ -49,8 +39,6 @@ contract UserStorage {
     );
   }
 
-  // no need to update audienceArray, a user should accept to be targeted if he
-  // gets paid for being in an audience
   function remove(address addr) public returns (bool success) {
     require(exists(addr));
     uint indexToDelete = users[addr].idx;
@@ -63,31 +51,13 @@ contract UserStorage {
 
   function updateGender(address addr, bytes32 gender) public returns(bool success) {
     require(exists(addr));
-
     users[addr].gender = gender;
-
-    LogUpdateUser(
-      addr,
-      users[addr].idx,
-      gender,
-      users[addr].city
-    );
-
     return true;
   }
 
   function updateCity(address addr, bytes32 city) public returns(bool success) {
     require(exists(addr));
-
     users[addr].city = city;
-
-    LogUpdateUser(
-      addr,
-      users[addr].idx,
-      users[addr].gender,
-      city
-    );
-
     return true;
   }
 
