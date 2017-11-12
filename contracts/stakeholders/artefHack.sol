@@ -6,11 +6,19 @@ contract ArtefHack is Role {
 	MessageStorage public messages;
 	TargetingStorage public targetings;
 
+	function ArtefHack(address _contents, address _messages, address _targetings) {
+		contents = ContentStorage(_contents);
+		messages = MessageStorage(_messages);
+		targetings = TargetingStorage(_targetings);
+	}
+
 	function publish(bytes32 contentId, uint entertainment, uint information) isRole('Publisher') returns (uint idx) {
 		return contents.upsert(contentId, tx.origin, entertainment, information);
 	}
 
-	function advertise(bytes32 content, bytes32 message) isRole('Advertiser') returns (bool success) {
+	function advertise(bytes32 identifier, bytes32 content, bytes32 message) isRole('Advertiser') returns (uint idx) {
+		//advertiser.payForDataUsage(tx.origin, address(this), baseTargetingPrice);
+		return targetings.upsert(identifier, content, message);
 	}
 
 	function visit() isRole('User') returns (bytes32 content, bytes32 message) {

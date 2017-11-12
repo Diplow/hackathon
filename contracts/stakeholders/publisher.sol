@@ -40,20 +40,6 @@ contract Publisher is Role{
 		placements.upsert(Utils.stringToBytes32(placementId), tx.origin, cost);
 	}
 
-	// ADVERTISER INTERFACE
-
-	function setupTargeting(string targetingId, string message, string placement, string audience) isRole('Advertiser') {
-		advertiser.payForDataUsage(tx.origin, address(this), baseTargetingPrice);
-		targetings.upsert(
-			tx.origin,
-			Utils.stringToBytes32(targetingId),
-			Utils.stringToBytes32(message),
-			Utils.stringToBytes32(placement),
-			Utils.stringToBytes32(audience),
-			true
-		);
-	}
-
 	// USER INTERFACE
 	function visits(string placement) isRole('User') returns (bytes32) {
 		uint c = targetings.count();

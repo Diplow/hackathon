@@ -29,7 +29,7 @@ contract TargetingStorage {
     return index.length-1;
   }
   
-  function get(bytes32 identifier) public constant returns(bytes32 content, bytes32 message, uint information, uint idx) {
+  function get(bytes32 identifier) public constant returns(bytes32 content, bytes32 message, uint idx) {
     require(exists(identifier)); 
 
     return(
@@ -51,7 +51,7 @@ contract TargetingStorage {
     return true;
   }
 
-  function upsert(bytes32 identifier, bytes32 content, bytes32 message, uint information) public returns(bool success) {
+  function upsert(bytes32 identifier, bytes32 content, bytes32 message) public returns(bool success) {
     if (exists(identifier)) {
       return (
         updateContent(identifier, content)
