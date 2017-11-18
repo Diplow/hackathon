@@ -1,10 +1,13 @@
 pragma solidity ^0.4.4;
 
-contract UserStorage {
+import '../utils/utils.sol';
+
+
+contract Users {
 
   struct User {
-    bytes32 gender;
-    bytes32 city;
+    uint preference;
+    bool message;
     uint idx;
   }
 
@@ -12,29 +15,25 @@ contract UserStorage {
   address[] private index;
 
   function exists(address addr) public constant returns(bool isIndeed) {
-    if (index.length == 0) return false;
-
-    return (
-      index[users[addr].idx] == addr
-    );
+  	return (index.length > 0 && index[users[addr].idx] == identifier);
   }
 
-  function insert(address addr, bytes32 gender, bytes32 city) public returns(uint idx) {
+  function insert(address addr, uint preference, bool message) public returns(uint idx) {
     require(!exists(addr));
 
-    users[addr].gender = gender;
-    users[addr].city = city;
+    users[addr].preference = preference;
+    users[addr].message = message;
     users[addr].idx = index.push(addr)-1;
 
     return index.length-1;
   }
 
-  function get(address addr) public constant returns(bytes32 gender, bytes32 city, uint idx) {
+  function get(address addr) public constant returns(uint preference, bool message, uint idx) {
     require(exists(addr));
 
     return(
-      users[addr].gender,
-      users[addr].city,
+      users[addr].preference,
+      users[addr].message,
       users[addr].idx
     );
   }
@@ -47,25 +46,6 @@ contract UserStorage {
     users[addressToMove].idx = indexToDelete;
     index.length--;
     return true;
-  }
-
-  function updateGender(address addr, bytes32 gender) public returns(bool success) {
-    require(exists(addr));
-    users[addr].gender = gender;
-    return true;
-  }
-
-  function updateCity(address addr, bytes32 city) public returns(bool success) {
-    require(exists(addr));
-    users[addr].city = city;
-    return true;
-  }
-
-  function upsert(address addr, bytes32 gender, bytes32 city) public returns(bool success) {
-    if (exists(addr)) {
-      return (updateGender(addr, gender) && updateCity(addr, city));
-    }
-    return (insert(addr, gender, city) > 0);
   }
 
   function count() public constant returns(uint) {

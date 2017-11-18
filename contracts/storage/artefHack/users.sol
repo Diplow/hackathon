@@ -1,0 +1,55 @@
+
+
+contract ArtefHackUserStorage {
+
+  struct ArtefHackUser {
+    bool message;
+    uint preference;
+    uint idx;
+  }
+
+  mapping(address => ArtefHackUser) private users;
+  address[] private index;
+
+  function exists(address addr) isRole('ArtefHack') public constant returns(bool exists) {
+    return (index.length != 0 && index[users[addr].idx] == addr);
+  }
+
+  function insert(address addr, uint preference, bool message) isRole('ArtefHack') public returns(uint idx) {
+    require(!exists(addr));
+
+    users[addr].preference = preference;
+    users[addr].message = message;
+    users[addr].idx = index.push(addr)-1;
+
+    return index.length-1;
+  }
+
+  function get(address addr) isRole('ArtefHack') public constant returns(uint preference, bool message, uint idx) {
+    require(exists(addr));
+
+    return(
+      users[addr].preference,
+      users[addr].message,
+      users[addr].idx
+    );
+  }
+
+  function remove(address addr) isRole('ArtefHack') public returns (bool success) {
+    require(exists(addr));
+    uint indexToDelete = users[addr].idx;
+    address addressToMove   = index[index.length-1];
+    index[indexToDelete] = addressToMove;
+    users[addressToMove].idx = indexToDelete;
+    index.length--;
+    return true;
+  }
+
+  function count() isRole('ArtefHack') public constant returns(uint) {
+    return index.length;
+  }
+
+  function getAt(uint idx) isRole('ArtefHack') public constant returns(address) {
+    return index[idx];
+  }
+}
