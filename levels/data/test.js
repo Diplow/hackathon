@@ -6,7 +6,7 @@ user = {
   'preference': 20,
   'likes_ads': false,
   'will_visit_next': true,
-  'seen_contents' : [],
+  'seen_contents' : [2, 5, 4],
   'satisfaction': 0
 };
 
@@ -18,6 +18,12 @@ content = {
   'metadata': 30
 };
 
+// USERS VS contents
+user_content_matrix = {
+  3: {1:0, 2:1, 3:0},
+  4: {1:1, 2:0, 3:1}
+}
+
 // ROLES
 roles = [
   'Admin',
@@ -28,3 +34,4 @@ roles = [
   'User',
   'User'
 ]
+//etc...

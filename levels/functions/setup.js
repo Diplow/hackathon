@@ -17,7 +17,7 @@ exports.init_variables = function(){
 
 exports.generate_score = function(visits, user_satisfaction_rate, publishers_revenue, ad_views){
   // insert very smart formula here
-  return 12;
+  return visits + user_satisfaction_rate + publishers_revenue + ad_views;
 }
 
 exports.variable = function(variable, count){

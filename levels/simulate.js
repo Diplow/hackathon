@@ -25,7 +25,7 @@ setup.setup_contracts(ArtefHack, DataProvider, Roles, web3);
 role.setRoles(Roles, data.roles);
 
 // advertiser variables
-var advertiser = accounts[0];
+var advertiser = 1;
 var advertiser_available_views = 0;
 
 // constants
@@ -48,7 +48,7 @@ publisher.insertContents(DataProvider, current_contents);
 // test your implementation!
 for(var i=0; i < NUMBER_OF_DAYS; i++){
   // simulate one day of the platform
-  var daily_visits, daily_satisfied_visits, daily_publisher_revenue, daily_ad_views = simulation.one_day(advertiser, current_users, current_contents);
+  var daily_visits, daily_satisfied_visits, daily_publisher_revenue, daily_ad_views = simulation.one_day(ArtefHack, advertiser, available_views, ADVERTISER_BATCH_BUY_COUNT, current_users, current_contents);
   // update output variables
   visits += daily_visits;
   satisfied_visits += daily_satisfied_visits;
