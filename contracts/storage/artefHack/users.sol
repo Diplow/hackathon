@@ -1,3 +1,4 @@
+pragma solidity ^0.4.4;
 
 
 contract ArtefHackUserStorage {
@@ -11,11 +12,11 @@ contract ArtefHackUserStorage {
   mapping(address => ArtefHackUser) private users;
   address[] private index;
 
-  function exists(address addr) isRole('ArtefHack') public constant returns(bool exists) {
+  function exists(address addr) public constant returns(bool) {
     return (index.length != 0 && index[users[addr].idx] == addr);
   }
 
-  function insert(address addr, uint preference, bool message) isRole('ArtefHack') public returns(uint idx) {
+  function insert(address addr, uint preference, bool message) public returns(uint idx) {
     require(!exists(addr));
 
     users[addr].preference = preference;
@@ -25,7 +26,7 @@ contract ArtefHackUserStorage {
     return index.length-1;
   }
 
-  function get(address addr) isRole('ArtefHack') public constant returns(uint preference, bool message, uint idx) {
+  function get(address addr) public constant returns(uint preference, bool message, uint idx) {
     require(exists(addr));
 
     return(
@@ -35,7 +36,7 @@ contract ArtefHackUserStorage {
     );
   }
 
-  function remove(address addr) isRole('ArtefHack') public returns (bool success) {
+  function remove(address addr) public returns (bool success) {
     require(exists(addr));
     uint indexToDelete = users[addr].idx;
     address addressToMove   = index[index.length-1];
@@ -45,11 +46,11 @@ contract ArtefHackUserStorage {
     return true;
   }
 
-  function count() isRole('ArtefHack') public constant returns(uint) {
+  function count() public constant returns(uint) {
     return index.length;
   }
 
-  function getAt(uint idx) isRole('ArtefHack') public constant returns(address) {
+  function getAt(uint idx) public constant returns(address) {
     return index[idx];
   }
 }

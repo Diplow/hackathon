@@ -1,31 +1,35 @@
 pragma solidity ^0.4.4;
 
 import '../storage/users.sol';
+import '../storage/balances.sol';
 import '../utils/roles.sol';
 import '../utils/utils.sol';
 
 
-contract DataProvider {
+contract DataProvider is Role {
 	Users private users;
-	uint public COST = 1;
+  Balances private balances;
+	int public COST = 1;
 
-	function DataProvider(address _users) {
+	function DataProvider(address _users, address _balances) {
 		users = Users(_users);
+    balances = Balances(_balances);
 	}
 
 	function buyUserData(address user) isRole('ArtefHack') returns (uint preference) {
 		require(users.exists(user));
 
-		uint preference;
+		uint res;
 		bool message;
-		(preference, message) = users.get(user);
+    uint idx;
+		(preference, message, idx) = users.get(user);
 
-		tx.origin.pay(COST, user);
+		balances.pay(tx.origin, user, COST);
 
-		return preference;
+		return res;
 	}
 
-	function insertUserData(uint preference, bool message) returns (bool success) {
+	function insertUserData(uint preference, bool message) returns (uint idx) {
 		return users.insert(tx.origin, preference, message);
 	}
 

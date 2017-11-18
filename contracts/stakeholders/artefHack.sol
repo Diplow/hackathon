@@ -17,25 +17,26 @@ contract ArtefHack is Role {
 	ArtefHackUserStorage private users;
 	ArtefHackContentStorage public contents;
 
-  uint ADVERTISING_COST = 1;
-  uint LIKE_COMPENSATION = 1;
-  uint DISLIKE_COMPENSATION = 1;
+  int ADVERTISING_COST = 1;
+  int LIKE_COMPENSATION = 1;
+  int DISLIKE_COMPENSATION = 1;
 
-	function ArtefHack(address _balances, address _advertiser, address _contents, address _publisher, address _dataProvider) {
+	function ArtefHack(address _balances, address _contents, address _users, address _publisher, address _dataProvider) {
     balances = Balances(_balances);
-		contents = ContentStorage(_contents);
+    contents = ArtefHackContentStorage(_contents);
+    users = ArtefHackUserStorage(_users);
     publisher = Publisher(_publisher);
     dataProvider = DataProvider(_dataProvider);
 	}
 
-	function publish(bytes32 catalogueId, bytes32 contentId) returns (bool success) {
+	function publish(bytes32 catalogueId) {
 		uint preference;
 		bytes32 content;
-    (content, preference) = dataProvider.buyContent(catalogueId);
+    (content, preference) = publisher.buyContent(catalogueId);
 		contents.insert(content, preference);
 	}
 
-	function visit() returns (bytes32 content, bool message) {
+	function visit() returns (bytes32, bool) {
     bytes32 content = "test content";
     bool message = true;
     if (message) {
@@ -44,7 +45,7 @@ contract ArtefHack is Role {
     return (content, message);
 	}
 
-	function eval(bytes32 content, int score) returns (bool success) {
+	function eval(bytes32 content, int score) {
 		// update user preference
 		if (score < 0) {
 			balances.pay(address(this), tx.origin, LIKE_COMPENSATION);

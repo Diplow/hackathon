@@ -6,25 +6,25 @@ import '../utils/utils.sol';
 contract Balances {
 
   address owner;
-  mapping(address => uint) private balances;
+  mapping(address => int) private balances;
   address[] private index;
 
   function Balances() {
     owner = tx.origin;
   }
 
-  function fund(uint value) isRole('ArtefHack') public {
+  function fund(int value) public {
     require(tx.origin == owner);
     create(tx.origin);
     updateBalance(tx.origin, value);
   }
 
-  function create(address addr) isRole('ArtefHack') public {
+  function create(address addr) public {
     require(!exists(addr));
     balances[addr] = 0;
   }
 
-  function pay(address from, address to, uint value) public returns (bool success) {
+  function pay(address from, address to, int value) public returns (bool success) {
     if (exists(from) && balances[tx.origin] > value && exists(to)) {
       return false;
     }
@@ -33,7 +33,7 @@ contract Balances {
     return true;
   }
 
-  function exists(address addr) private constant returns(bool exists) {
+  function exists(address addr) private constant returns(bool) {
     for (uint i=0; i<index.length; i++) {
       if (index[i] == addr) { return true; }
     }

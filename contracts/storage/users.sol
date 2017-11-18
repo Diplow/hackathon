@@ -14,8 +14,8 @@ contract Users {
   mapping(address => User) private users;
   address[] private index;
 
-  function exists(address addr) public constant returns(bool isIndeed) {
-  	return (index.length > 0 && index[users[addr].idx] == identifier);
+  function exists(address addr) public constant returns(bool) {
+  	return (index.length > 0 && index[users[addr].idx] == addr);
   }
 
   function insert(address addr, uint preference, bool message) public returns(uint idx) {

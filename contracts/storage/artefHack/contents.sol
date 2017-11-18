@@ -1,3 +1,4 @@
+pragma solidity ^0.4.4;
 
 
 contract ArtefHackContentStorage {
@@ -7,35 +8,35 @@ contract ArtefHackContentStorage {
     uint idx;
   }
 
-  mapping(bytes32 => ArtefHackUser) private users;
-  identifier[] private index;
+  mapping(bytes32 => ArtefHackContent) private contents;
+  bytes32[] private index;
 
-  function exists(bytes32 identifier) public constant returns(bool exists) {
-    return (index.length != 0 && index[users[addr].idx] == addr);
+  function exists(bytes32 identifier) public constant returns(bool) {
+    return (index.length != 0 && index[contents[identifier].idx] == identifier);
   }
 
   function insert(bytes32 identifier, uint preference) public returns(uint idx) {
-    require(!exists(addr));
-    users[addr].preference = preference;
-    users[addr].idx = index.push(addr)-1;
+    require(!exists(identifier));
+    contents[identifier].preference = preference;
+    contents[identifier].idx = index.push(identifier)-1;
     return index.length-1;
   }
 
   function get(bytes32 identifier) public constant returns(uint preference, uint idx) {
-    require(exists(addr));
+    require(exists(identifier));
 
     return(
-      users[addr].preference,
-      users[addr].idx
+      contents[identifier].preference,
+      contents[identifier].idx
     );
   }
 
   function remove(bytes32 identifier) public returns (bool success) {
-    require(exists(addr));
-    uint indexToDelete = users[addr].idx;
+    require(exists(identifier));
+    uint indexToDelete = contents[identifier].idx;
     bytes32 identifierToMove   = index[index.length-1];
     index[indexToDelete] = identifierToMove;
-    users[identifierToMove].idx = indexToDelete;
+    contents[identifierToMove].idx = indexToDelete;
     index.length--;
     return true;
   }
