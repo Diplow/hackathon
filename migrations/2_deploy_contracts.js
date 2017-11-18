@@ -8,7 +8,7 @@ var balances = artifacts.require("Balances");
 var catalogue = artifacts.require("Catalogue");
 var users = artifacts.require("UserStorage");
 
-var roles = artifacts.require("Role")
+var roles = artifacts.require("Role");
 var utils = artifacts.require("Utils");
 
 module.exports = function(deployer) {

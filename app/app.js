@@ -1,4 +1,4 @@
 
-import { firstLevel } from '../levels/first.js'
+import { simulate } from '../levels/simulate.js'
 
-window.firstLevel = firstLevel;
+window.simulate = simulate;
