@@ -1,79 +1,104 @@
 pragma solidity ^0.4.4;
 
-import './advertiser.sol';
-import '../storage/audiences.sol';
 import '../storage/users.sol';
 import '../utils/roles.sol';
 import '../utils/utils.sol';
 
-contract DataProvider is Role {
-	address public owner;
 
-	Advertiser private advertiser;
-	AudienceStorage private audiences;
-	UserStorage private users;
+contract DataProvider {
+	Users private users;
+	uint public COST;
 
-    uint private baseAudiencePrice = 100;
-
-	// We consider here that there is only one data provider
-	function DataProvider(address _advertiser, address _audiences, address _users) {
-		owner = tx.origin;
-		advertiser = Advertiser(_advertiser);
-		audiences = AudienceStorage(_audiences);
-		users = UserStorage(_users);
+	function DataProvider(address _users) {
+		users = Users(_users);
 	}
 
-	// fallback function so that the dataprovider contract can receive funds
-	function() payable { }
+	function buyUserData(address user) isRole('ArtefHack') returns (uint preference) {
+		require(users.exists(user));
 
-	// USER INTERFACE
+		uint preference;
+		bool message;
+		(preference, message) = users.get(user);
 
-	// a user will have to set both her data at the same time
-	function setData(string gender, string city) isRole('User') returns (bool success) {
-		return users.upsert(tx.origin, Utils.stringToBytes32(gender), Utils.stringToBytes32(city));
+		tx.origin.pay(COST, user);
+
+		return preference;
 	}
 
-	function getData() isRole('User') returns (bytes32) {
-		bytes32 gender;
-		bytes32 city;
-		uint idx;
-		(gender, city, idx) = users.get(tx.origin);
-		return gender;
+	function insertUserData(uint preference, bool message) returns (bool success) {
+		return users.insert(tx.origin, preference, message);
 	}
+}
 
-	function resign() isRole('User') returns (bool success) {
-		return users.remove(tx.origin);
-	}
+contract Users {
 
-	// ADVERTISER INTERFACE
+  struct User {
+    uint preference;
+    bool message;
+    uint idx;
+  }
 
-	function setAudience(string audienceId, string genderCriteria, string cityCriteria) isRole('Advertiser') returns (bool success) {
-		advertiser.payForDataUsage(tx.origin, address(this), baseAudiencePrice);
-		return audiences.upsert(
-			Utils.stringToBytes32(audienceId),
-			Utils.stringToBytes32(genderCriteria),
-			Utils.stringToBytes32(cityCriteria)
-		);
-	}
+  mapping(address => User) private users;
+  address[] private index;
 
-	function getAudiencePrice() isRole('Advertiser') returns (uint) {
-		// includes user fee and dataprovider fee
-		return baseAudiencePrice;
-	}
+  function exists(address addr) public constant returns(bool isIndeed) {
+	return (index.length > 0 && index[users[addr].idx] == identifier);
+  }
 
-	// PUBLISHER INTERFACE
+  function insert(address addr, bytes32 gender, bytes32 city) public returns(uint idx) {
+    require(!exists(addr));
 
-	function doesBelong(address user, bytes32 audienceId) isRole('Publisher') returns (bool success) {
-		bytes32 gender;
-		bytes32 city;
-		uint usrIdx;
-		bytes32 genderCriteria;
-		bytes32 cityCriteria;
-		uint audIdx;
-		(gender, city, usrIdx) = users.get(user);
-		(genderCriteria, cityCriteria, audIdx) = audiences.get(audienceId);
-		return (
-			(genderCriteria == "" || genderCriteria == gender) && (cityCriteria == "" || cityCriteria == city)
-		);
-	}
+    users[addr].gender = gender;
+    users[addr].city = city;
+    users[addr].idx = index.push(addr)-1;
+
+    return index.length-1;
+  }
+
+  function get(address addr) public constant returns(bytes32 gender, bytes32 city, uint idx) {
+    require(exists(addr));
+
+    return(
+      users[addr].gender,
+      users[addr].city,
+      users[addr].idx
+    );
+  }
+
+  function remove(address addr) public returns (bool success) {
+    require(exists(addr));
+    uint indexToDelete = users[addr].idx;
+    address addressToMove   = index[index.length-1];
+    index[indexToDelete] = addressToMove;
+    users[addressToMove].idx = indexToDelete;
+    index.length--;
+    return true;
+  }
+
+  function updateGender(address addr, bytes32 gender) public returns(bool success) {
+    require(exists(addr));
+    users[addr].gender = gender;
+    return true;
+  }
+
+  function updateCity(address addr, bytes32 city) public returns(bool success) {
+    require(exists(addr));
+    users[addr].city = city;
+    return true;
+  }
+
+  function upsert(address addr, bytes32 gender, bytes32 city) public returns(bool success) {
+    if (exists(addr)) {
+      return (updateGender(addr, gender) && updateCity(addr, city));
+    }
+    return (insert(addr, gender, city) > 0);
+  }
+
+  function count() public constant returns(uint) {
+    return index.length;
+  }
+
+  function getAt(uint idx) public constant returns(address) {
+    return index[idx];
+  }
 }

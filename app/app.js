@@ -1,4 +1,4 @@
 
-import { firstLevel } from '../levels/first_level.js'
+import { firstLevel } from '../levels/first.js'
 
 window.firstLevel = firstLevel;
