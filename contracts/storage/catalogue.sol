@@ -10,8 +10,8 @@ contract Catalogue {
       uint idx;
     }
 
-  mapping(bytes32 => PublicContent) private publicContents;
-  bytes32[] private index;
+  mapping(uint => PublicContent) private publicContents;
+  uint[] private index;
 
   function exists(uint identifier) public constant returns(bool) {
     return (index.length > 0 && index[publicContents[identifier].idx] == identifier);

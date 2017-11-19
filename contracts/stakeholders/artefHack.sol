@@ -33,7 +33,7 @@ contract ArtefHack is Role {
     advertiser = adv;
   }
 
-	function publish(bytes32 catalogueId) {
+	function publish(uint catalogueId) {
 		uint preference;
 		bytes32 content;
     (content, preference) = publisher.buyContent(catalogueId);
