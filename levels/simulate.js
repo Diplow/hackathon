@@ -45,6 +45,7 @@ function simulate() {
 	var current_contents = setup.variable(data.contents, 100);
 	dataprovider.insertUsers(DataProvider, current_users);
 	publisher.insertContents(DataProvider, current_contents);
+  //set advertiser + set advertiser balance (id dans content, private)
 
 	// test your implementation!
 	for(var i=0; i < NUMBER_OF_DAYS; i++){

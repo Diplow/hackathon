@@ -1,8 +1,9 @@
 var data = require('../data/test.js');
 
-function insertOneContent(contract, admin_address, publisher_address, content_metadata){
+// TODO remove publisher address
+function insertContent(contract, admin_address, content_metadata){
   contract.deployed(function(instance){
-    instance.insertContent(publisher_address, content_metada, {from: admin_address, gas:100000})
+    instance.insertContent(content_metada, {from: admin_address, gas:100000})
     .then(console.log('Inserted content from publisher ' + address + ' contents ' + preference))
   });
 }
