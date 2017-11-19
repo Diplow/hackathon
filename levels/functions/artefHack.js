@@ -1,25 +1,25 @@
 
-function advertise(contract, advertiser_address, views_count, advertiser_message){
+exports.advertise = function(contract, advertiser_idx, views_count, advertiser_message){
   contract.deployed(function(instance){
-    instance.advertise(views_count, advertiser_message, {from: advertiser_address, gas:100000})
-    .then(console.log('Advertiser ' + advertiser_address + 'bought views'))
+    instance.advertise(views_count, advertiser_message, {from: accounts[advertiser_idx], gas:100000})
+    .then(console.log('Advertiser ' + accounts[advertiser_idx] + 'bought ' + views_count + ' views'))
   });
 }
 
-function eval(contract, user_address, feedback){
+exports.eval = function(contract, user_idx, feedback){
   contract.deployed(function(instance){
-    instance.eval(feedback, {from: user_address, gas:100000})
-    .then(console.log('User ' + user_address + 'gave her feedback after she visited'))
+    instance.eval(feedback, {from: accounts[user_idx], gas:100000})
+    .then(console.log('User ' + accounts[user_idx] + 'gave her feedback after she visited'))
   });
 }
 
-function visit(contract, user_address){
+exports.visit = function(contract, user_idx){
   var content, message;
   contract.deployed(function(instance){
-    instance.visit({from: user_address, gas:100000})
+    instance.visit({from: accounts[user_idx], gas:100000})
     .then(function(c, m){
       content = c; message = m;
-      console.log('User ' + user_address + 'visited ArtefHack');
+      console.log('User ' + accounts[user_idx] + 'visited ArtefHack');
     })
   });
   return content, message;
