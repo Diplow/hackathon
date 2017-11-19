@@ -1,6 +1,8 @@
 // USERS
 // example
-users = [user];
+users = [
+  user
+];
 user = {
   'address': 'adr',
   'preference': 20,
@@ -12,7 +14,9 @@ user = {
 
 // CONTENTS
 // example
-contents = [content];
+contents = [
+  content
+];
 content = {
   'publisher': 'adr',
   'metadata': 30
@@ -27,4 +31,4 @@ roles = [
   'Publisher',
   'User',
   'User'
-]
+];

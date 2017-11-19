@@ -35,7 +35,7 @@ function visits(users, contents){
 
     // if users are satisfied by the service, the user base will grow
     if(data.users[users[i]].satisfaction > 3){
-      current_users.push(data.users[current_users.length + 1]);
+      current_users.push(data.users[current_users[current_users.length -1 ] + 1]);
     }
 
   }
