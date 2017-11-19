@@ -2,8 +2,7 @@
 var data = require('../data/test.js')
 var artefHack = require('./artefHack.js')
 
-exports.one_day = function(contract, advertiser_address, available_views, views_to_buy, users, contents){
-  advertise(contract, advertiser_address, available_views, views_to_buy);
+exports.one_day = function(contract, users, contents){
   return visits(contract, users, contents);
 }
 
@@ -19,7 +18,11 @@ function visits(contract, users, contents){
     if(data.users[users[i]]['will_visit_next']){
       var content, message, publisher_revenue, views;
 
-      content, message, publisher_revenue, views = visit(contract, users[i], contents);
+      var vis = visit(contract, users[i], contents);
+      content = vis[0];
+      message = vis[1];
+      publisher_revenue = vis[2];
+      views = vis[3];
       evaluation = evaluate(contract, users[i], content, message);
 
       daily_visits++;
@@ -38,7 +41,7 @@ function visits(contract, users, contents){
     }
 
   }
-  return (daily_visits, daily_satisfied_visits, daily_publisher_revenue, daily_ad_views);
+  return [daily_visits, daily_satisfied_visits, daily_publisher_revenue, daily_ad_views];
 }
 
 function visit(contract, user, contents){
@@ -64,7 +67,7 @@ function visit(contract, user, contents){
     current_contents.push(data.contents[visited_content]);
   }
 
-  return content, message, publisher_revenue, views;
+  return [content, message, publisher_revenue, views];
 }
 
 function evaluate(contract, user, content, message){

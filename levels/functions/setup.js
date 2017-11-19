@@ -3,7 +3,7 @@ import { default as Web3} from 'web3';
 exports.setup_contracts = function(artefHack, dataProvider, publisher, roles, web3) {
   artefHack.setProvider(web3.currentProvider);
   dataProvider.setProvider(web3.currentProvider);
-  publisher.setProvider(we3.currentProvider);
+  publisher.setProvider(web3.currentProvider);
   roles.setProvider(web3.currentProvider);
 }
 
@@ -12,16 +12,23 @@ exports.init_variables = function(){
   var accounts;
   web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   accounts = web3.eth.accounts;
-  return (web3, accounts);
+  return {
+    web3: web3,
+    accounts:accounts
+  };
 }
 
-exports.generate_score = function(visits, user_satisfaction_rate, publishers_revenue, ad_views){
+function generate_score(visits, user_satisfaction_rate, publishers_revenue, ad_views){
   // insert very smart formula here
   return visits + user_satisfaction_rate + publishers_revenue + ad_views;
 }
 
 exports.variable = function(variable, count){
-  return variable.slice(0, count);
+  var sliced = {};
+  for (var i=0; i < count; i++){
+    sliced[i] = variable[i];
+  }
+  return sliced;
 }
 
 exports.log_results = function(visits, user_satisfaction_rate, publishers_revenue, ad_views){
@@ -30,5 +37,5 @@ exports.log_results = function(visits, user_satisfaction_rate, publishers_revenu
   + publishers_revenue + ' tokens for publishers, and '
   + ad_views + ' ad views for the advertiser!');
   console.log('Your score is : ' +
-  setup.generate_score(visits, user_satisfaction_rate, publishers_revenue, ad_views));
+  generate_score(visits, user_satisfaction_rate, publishers_revenue, ad_views));
 }

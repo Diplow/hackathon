@@ -19,7 +19,7 @@ contract Users {
   }
 
   function insert(address addr, uint preference, bool message) public returns(uint idx) {
-    require(!exists(addr));
+    require(!this.exists(addr));
 
     users[addr].preference = preference;
     users[addr].message = message;
