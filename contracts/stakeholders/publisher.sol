@@ -18,6 +18,7 @@ contract Publisher is Role {
 	}
 
 	function insertContent(bytes32 identifier, uint preference) returns (uint idx) {
+		// TODO test indexes
 		uint res = contents.push(identifier)-1;
 		catalogue.insert(identifier, res, preference);
 		return res;

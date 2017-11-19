@@ -1,9 +1,10 @@
 var data = require('../data/test.js');
 
 // TODO remove publisher address
+// TODO add content_id bytes32
 function insertContent(contract, admin_address, content_metadata){
   contract.deployed(function(instance){
-    instance.insertContent(content_metada, {from: admin_address, gas:100000})
+    instance.insertContent(content_id, content_metada, {from: admin_address, gas:100000})
     .then(console.log('Inserted content from publisher ' + address + ' contents ' + preference))
   });
 }

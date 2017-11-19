@@ -23,6 +23,7 @@ def generate_users(publisher_count, user_count):
     with open('./users.json' ,'w') as f:
         json.dump(users, f);
 
+# TODO contents ids are bytes32!!!
 def generate_contents(publisher_count, contents_count):
     contents = {
         "contents": {}
