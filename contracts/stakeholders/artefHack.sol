@@ -41,11 +41,13 @@ contract ArtefHack is Role {
 	}
 
 	function visit() returns (bytes32, bool) {
-    if (!users.exists(tx.origin)) {
-      users.init(tx.origin);
-    }
-    bytes32 content = users.getNextContent(tx.origin);
-    bool message = users.sendMessage(tx.origin);
+    // if (!users.exists(tx.origin)) {
+    //   users.init(tx.origin);
+    // }
+    // bytes32 content = users.getNextContent(tx.origin);
+    // bool message = users.sendMessage(tx.origin);
+    bytes32 content = "hbhdqzdq";
+    bool message = true;
     if (message) {
       balances.pay(advertiser, address(this), ADVERTISING_COST);
     }
