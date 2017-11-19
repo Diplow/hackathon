@@ -6,7 +6,6 @@ import '../utils/utils.sol';
 contract Catalogue {
 
   struct PublicContent {
-      uint contentIdentifier;
       uint preference;
       uint idx;
     }
@@ -14,22 +13,20 @@ contract Catalogue {
   mapping(bytes32 => PublicContent) private publicContents;
   bytes32[] private index;
 
-  function exists(bytes32 identifier) public constant returns(bool) {
+  function exists(uint identifier) public constant returns(bool) {
     return (index.length > 0 && index[publicContents[identifier].idx] == identifier);
   }
 
-  function insert(bytes32 identifier, uint contentIdentifier, uint preference) public returns(uint idx) {
-    require(!exists(identifier)); 
-    publicContents[identifier].contentIdentifier = contentIdentifier;
+  function insert(uint identifier, uint preference) public returns(uint idx) {
+    require(!exists(identifier));
     publicContents[identifier].preference = preference;
     publicContents[identifier].idx = index.push(identifier)-1;
     return index.length-1;
   }
 
-  function get(bytes32 identifier) public constant returns(uint contentIdentifier, uint preference, uint idx) {
+  function get(uint identifier) public constant returns(uint preference, uint idx) {
     require(exists(identifier)); 
     return(
-      publicContents[identifier].contentIdentifier,
       publicContents[identifier].preference,
       publicContents[identifier].idx
     );
@@ -39,7 +36,7 @@ contract Catalogue {
     return index.length;
   }
 
-  function getAt(uint idx) public constant returns(bytes32) {
+  function getAt(uint idx) public constant returns(uint) {
     return index[idx];
   }
 }

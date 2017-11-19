@@ -29,6 +29,10 @@ contract ArtefHack is Role {
     dataProvider = DataProvider(_dataProvider);
 	}
 
+  function setAdvertiser(address adv) {
+    advertiser = adv;
+  }
+
 	function publish(bytes32 catalogueId) {
 		uint preference;
 		bytes32 content;
