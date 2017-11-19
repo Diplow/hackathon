@@ -11,9 +11,9 @@
 // TODO verify we don't need to pass accounts in argument
 
 // add content id to eval fct
-exports.eval = function(contract, user_idx, feedback){
+exports.eval = function(contract, user_idx, content, score){
   contract.deployed(function(instance){
-    instance.eval(feedback, {from: accounts[user_idx], gas:100000})
+    instance.eval(content, score, {from: accounts[user_idx], gas:100000})
     .then(console.log('User ' + accounts[user_idx] + 'gave her feedback after she visited'))
   });
 }
@@ -25,7 +25,7 @@ exports.visit = function(contract, user_idx){
     instance.visit({from: accounts[user_idx], gas:100000})
     .then(function(c, m){
       content = c; message = m;
-      console.log('User ' + accounts[user_idx] + 'visited ArtefHack');
+      console.log('User ' + accounts[user_idx] + 'visited ArtefHack and got: ' + content + 'and msg: ' + string(message));
     })
   });
   return content, message;
