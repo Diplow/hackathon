@@ -6,9 +6,9 @@ var artefhackcontentsstorage = artifacts.require("ArtefHackContentStorage");
 var artefhackusersstorage = artifacts.require("ArtefHackUserStorage");
 var balances = artifacts.require("Balances");
 var catalogue = artifacts.require("Catalogue");
-var users = artifacts.require("UserStorage");
+var users = artifacts.require("Users");
 
-var roles = artifacts.require("Role");
+var roles = artifacts.require("RolesStorage");
 var utils = artifacts.require("Utils");
 
 module.exports = function(deployer) {
@@ -20,9 +20,9 @@ module.exports = function(deployer) {
             return deployer.deploy(balances).then(function() {
               return deployer.deploy(catalogue).then(function() {
                 return deployer.deploy(users).then(function() {
-                  return deployer.deploy(dataprovider, users.address).then(function() {
-                    return deployer.deploy(publisher, catalogue.address, balances.address).then(function() {
-                      return deployer.deploy(artefhack, balances.address, artefhackcontentsstorage.address, artefhackusersstorage.address, publisher.address, dataprovider.address);
+                  return deployer.deploy(dataprovider, users.address, roles.address).then(function() {
+                    return deployer.deploy(publisher, catalogue.address, balances.address, roles.address).then(function() {
+                      return deployer.deploy(artefhack, balances.address, artefhackcontentsstorage.address, artefhackusersstorage.address, publisher.address, dataprovider.address, roles.address);
                     });
                   });
                 });

@@ -11,7 +11,7 @@ contract DataProvider is Role {
   Balances private balances;
 	int public COST = 1;
 
-	function DataProvider(address _users, address _balances) {
+	function DataProvider(address _users, address _balances, address _roles) Role(_roles){
 		users = Users(_users);
     balances = Balances(_balances);
 	}

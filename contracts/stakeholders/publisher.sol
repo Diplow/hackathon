@@ -12,7 +12,7 @@ contract Publisher is Role {
 	Catalogue public catalogue;
 	bytes32[] private contents;
 
-	function Publisher(address _catalogue, address _balances) {
+	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles){
 		catalogue = Catalogue(_catalogue);
 		balances = Balances(_balances);
 	}

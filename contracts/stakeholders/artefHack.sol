@@ -21,7 +21,7 @@ contract ArtefHack is Role {
   int LIKE_COMPENSATION = 1;
   int DISLIKE_COMPENSATION = 1;
 
-	function ArtefHack(address _balances, address _contents, address _users, address _publisher, address _dataProvider) {
+	function ArtefHack(address _balances, address _contents, address _users, address _publisher, address _dataProvider, address _roles) Role(_roles){
     balances = Balances(_balances);
     contents = ArtefHackContentStorage(_contents);
     users = ArtefHackUserStorage(_users);
