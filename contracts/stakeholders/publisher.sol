@@ -20,16 +20,15 @@ contract Publisher is Role {
 	function insertContent(bytes32 identifier, uint preference) returns (uint idx) {
 		// TODO test indexes
 		uint res = contents.push(identifier)-1;
-		catalogue.insert(identifier, res, preference);
+		catalogue.insert(res, preference);
 		return res;
 	}
 
-	function buyContent(bytes32 catalogueId) isRole('ArtefHack') returns (bytes32 content, uint pref) {
+	function buyContent(uint catalogueId) isRole('ArtefHack') returns (bytes32 content, uint pref) {
 		balances.pay(tx.origin, address(this), 1);
-		uint cid;
 		uint preference;
 		uint idx;
-		(cid, preference, idx) = catalogue.get(catalogueId);
-		return (contents[cid], preference);
+		(preference, idx) = catalogue.get(catalogueId);
+		return (contents[catalogueId], preference);
 	}
 }
