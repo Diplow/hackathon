@@ -41,6 +41,12 @@ contract ArtefHack is Role {
 	}
 
 	function visit() returns (bytes32, bool) {
+<<<<<<< HEAD
+		// if (!users.exists(tx.origin)) {
+		//   users.init(tx.origin);
+		// }
+		// bytes32 content = users.getNextContent(tx.origin);
+		// bool message = users.sendMessage(tx.origin);
     bytes32 content = Utils.stringToBytes32("ZQRNQFIDOR");
     bool message = true;
     if (message) {

@@ -4,25 +4,32 @@ import math
 import random
 import string
 
-PUBLISHERS_COUNT = 10
+ADVERTISER_COUNT = 1
+PUBLISHERS_COUNT = 1
 CONTENTS_COUNT = 100
 USERS_COUNT = 1000
 
-def generate_users(publisher_count, user_count):
-    users = {
-        "users": {}
-    }
-    for i in range(publisher_count, user_count + publisher_count):
-        users["users"][str(i)] = {
+def xUsers():
+    previous_accounts = ADVERTISER_COUNT + PUBLISHERS_COUNT
+    for i in range(previous_accounts, USERS_COUNT + previous_accounts):
+        yield str(i), {
           "preference": random.randint(0, 100),
-          "likes_ads": True if 10 * random.random() > 5 else False,
+          "message": True if 10 * random.random() > 5 else False,
           "will_visit_next": True,
           "seen_contents" : [],
           "satisfaction": 0
         }
 
-    with open('./users.json' ,'w') as f:
-        json.dump(users, f);
+def xContents():
+    for i in range(CONTENTS_COUNT):
+        yield uuid4(), {
+            "preference": random.randint(0, 100)
+        }
+
+def generate_users(publisher_count, user_count):
+    with open('./users.js' ,'w') as f:
+        users = {i: usr for i, usr in xUsers()}
+        f.write('var users = {}'.format(json.dumps(users)))
 
 def generate_contents(publisher_count, contents_count):
     contents = {

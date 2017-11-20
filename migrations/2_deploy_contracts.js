@@ -20,7 +20,7 @@ module.exports = function(deployer) {
             return deployer.deploy(balances).then(function() {
               return deployer.deploy(catalogue).then(function() {
                 return deployer.deploy(users).then(function() {
-                  return deployer.deploy(dataprovider, users.address, roles.address).then(function() {
+                  return deployer.deploy(dataprovider, users.address, balances.address, roles.address).then(function() {
                     return deployer.deploy(publisher, catalogue.address, balances.address, roles.address).then(function() {
                       return deployer.deploy(artefhack, balances.address, artefhackcontentsstorage.address, artefhackusersstorage.address, publisher.address, dataprovider.address, roles.address);
                     });
