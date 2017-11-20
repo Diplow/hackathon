@@ -39,7 +39,7 @@ contract Users {
   }
 
   function remove(address addr) public returns (bool success) {
-    require(exists(addr));
+    require(this.exists(addr));
     uint indexToDelete = users[addr].idx;
     address addressToMove   = index[index.length-1];
     index[indexToDelete] = addressToMove;

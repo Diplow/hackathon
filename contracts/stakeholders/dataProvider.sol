@@ -7,7 +7,7 @@ import '../utils/utils.sol';
 
 
 contract DataProvider is Role {
-	Users private users;
+	Users public users;
   Balances private balances;
 	int public COST = 1;
 

@@ -41,7 +41,7 @@ contract ArtefHack is Role {
 	}
 
 	function visit() returns (bytes32, bool) {
-    bytes32 content = "test content";
+    bytes32 content = Utils.stringToBytes32("ZQRNQFIDOR");
     bool message = true;
     if (message) {
       balances.pay(advertiser, address(this), ADVERTISING_COST);
