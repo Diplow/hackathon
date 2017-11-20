@@ -50,7 +50,7 @@ export function simulate() {
 	var current_users = setup.variable(data.users, 20);
 	var current_contents = setup.variable(data.contents, 10);
 	dataprovider.insertUsers(DataProvider, accounts, current_users);
-	// publisher.insertContents(DataProvider, current_contents);
+	publisher.insertContents(DataProvider, current_contents);
   //set advertiser + set advertiser balance (id dans content, private)
 
 	// test your implementation!
