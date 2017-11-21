@@ -10,8 +10,8 @@ contract Catalogue {
       uint idx;
     }
 
-  mapping(uint => PublicContent) private publicContents;
-  uint[] private index;
+  mapping(uint => PublicContent) public publicContents;
+  uint[] public index;
 
   function exists(uint identifier) public constant returns(bool) {
     return (index.length > 0 && index[publicContents[identifier].idx] == identifier);
@@ -25,7 +25,7 @@ contract Catalogue {
   }
 
   function get(uint identifier) public constant returns(uint preference, uint idx) {
-    require(exists(identifier)); 
+    require(exists(identifier));
     return(
       publicContents[identifier].preference,
       publicContents[identifier].idx

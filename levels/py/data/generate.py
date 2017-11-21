@@ -10,26 +10,21 @@ CONTENTS_COUNT = 100
 USERS_COUNT = 1000
 
 def xUsers():
-    previous_accounts = ADVERTISER_COUNT + PUBLISHERS_COUNT
+    previous_accounts = ADVERTISER_COUNT + PUBLISHERS_COUNT + 1 + 1 # ArtefHack and Admin
     for i in range(previous_accounts, USERS_COUNT + previous_accounts):
         yield str(i), {
           "preference": random.randint(0, 100),
-          "message": True if 10 * random.random() > 5 else False,
-          "will_visit_next": True,
+          "message": True if 10 * random.random() > 3 else False,
           "seen_contents" : [],
-          "satisfaction": 0
-        }
-
-def xContents():
-    for i in range(CONTENTS_COUNT):
-        yield uuid4(), {
-            "preference": random.randint(0, 100)
+          "satisfaction": 0,
+          "failures": 0
         }
 
 def generate_users(publisher_count, user_count):
-    with open('./users.js' ,'w') as f:
-        users = {i: usr for i, usr in xUsers()}
-        f.write('var users = {}'.format(json.dumps(users)))
+    with open('./users.json' ,'w') as f:
+        users = {"users":{}}
+        users["users"] = {i: usr for i, usr in xUsers()}
+        json.dump(users, f)
 
 def generate_contents(publisher_count, contents_count):
     contents = {

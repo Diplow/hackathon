@@ -11,13 +11,12 @@ def contract_deploy_data(contract):
 def setup_contract_instances(web3):
     contract_metadata = {}
     contract_instances = {}
-    for el in ['ArtefHack', 'DataProvider', 'Publisher', 'RolesStorage']:
+    for el in ['ArtefHack', 'Balances', 'DataProvider', 'Publisher', 'RolesStorage']:
         contract_metadata[el] = contract_deploy_data(el)
         network_id = list(contract_metadata[el]["networks"].keys())[-1]
         contract_instances[el] = web3.eth.contract(
     		contract_metadata[el]['abi'],
-    		contract_metadata[el]["networks"][network_id]['address'],
-    		ContractFactoryClass=ConciseContract
+    		contract_metadata[el]["networks"][network_id]['address']
     	)
     return contract_instances
 
@@ -33,49 +32,59 @@ def setup_users(whole_dataset, count, overhead=0):
     	data[str(i)] = whole_dataset[str(i)]
     return data
 
-def setup_contents(whole_dataset, count):
-    return whole_dataset[:count]
+# we might not allow users to sell their data
+# def insert_users(contract_instances, current_users, accounts, count):
+#     for el in current_users:
+#     	contract_instances['DataProvider'].insertUserData(
+#     		current_users[el]['preference'],
+#     		current_users[el]['likes_ads'],
+#     		transact={
+#     			'from':accounts[int(el)],
+#     			'gas': 200000
+#     		}
+#     	)
+
+def insert_contents(contract_instances, contents, admin_address):
+    for el in contents:
+    	contract_instances['Publisher'].transact({
+			'from':admin_address,
+			'gas': 200000
+		}).insertContent(
+    		bytearray(el['id'], 'utf-8'),
+    		el['preference']
+    	)
+
+def set_stakeholders(contract_instances, accounts):
+	contract_instances['ArtefHack'].transact({'from': accounts[0], 'gas':200000}).setArtefHack(accounts[1])
+	contract_instances['Publisher'].transact({'from': accounts[0], 'gas':200000}).setPublisher(accounts[2])
 
 def set_roles(contract_instances, accounts):
-    contract_instances['RolesStorage'].setRole(
-        accounts[1],
-        'Publisher',
-        transact={'from':accounts[0], 'gas':100000}
-    )
-    contract_instances['RolesStorage'].setRole(
-        accounts[2],
-        'Advertiser',
-        transact={'from':accounts[0], 'gas':100000}
-    )
-    for u in range(2, len(accounts)):
-        contract_instances['RolesStorage'].setRole(
-            accounts[u],
-            'User',
-            transact={'from':accounts[0], 'gas':100000}
-        )
+	for idx, role in enumerate(['ArtefHack', 'Publisher', 'Advertiser']):
+	    contract_instances['RolesStorage'].transact({
+			'from':accounts[0],
+			'gas':100000}
+		).setRole(accounts[idx + 1], role)
+	for u in range(4, len(accounts)):
+	    contract_instances['RolesStorage'].transact({
+			'from':accounts[0],
+			'gas':100000}
+		).setRole(accounts[u], 'User')
 
+def set_balances(contract_instances, accounts):
+	# create balances for all addresses
+	for ad in accounts:
+		contract_instances['Balances'].transact({'from': accounts[0], 'gas':1000000}).create(ad)
 
-def insert_users(contract_instances, current_users, accounts, count):
-    for el in current_users:
-    	contract_instances['DataProvider'].insertUserData(
-    		current_users[el]['preference'],
-    		current_users[el]['likes_ads'],
-    		transact={
-    			'from':accounts[int(el)],
-    			'gas': 200000
-    		}
-    	)
+	# fund admin's balance
+	contract_instances['Balances'].transact({'from': accounts[0], 'gas':1000000}).fund(1000000)
 
-def insert_contents(contract_instances, current_contents, accounts, count):
-    for el in current_contents:
-    	contract_instances['Publisher'].insertContent(
-    		bytearray(''.join(random.choices(string.ascii_uppercase, k=5)), 'utf-8'),
-    		current_contents[el]['metadata'],
-    		transact={
-    			'from':accounts[0],
-    			'gas': 200000
-    		}
-    	)
+	# set initial balance for stakeholders
+	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[1], 1000)
+	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[3], 50000)
+
+	# set initial balance for all other users
+	# for u in range(4, len(accounts)):
+	# 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[u], 50)
 
 def log_results(visits, satisfied_visits, publisher_revenue, ad_views):
     print('')

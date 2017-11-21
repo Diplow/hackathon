@@ -8,9 +8,11 @@ import '../utils/utils.sol';
 
 contract Publisher is Role {
 
+	address public publisher;
 	Balances public balances;
 	Catalogue public catalogue;
-	bytes32[] private contents;
+	bytes32[] public contents;
+	uint PUBLISHER_COMPENSATION = 50;
 
 	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles){
 		catalogue = Catalogue(_catalogue);
@@ -24,11 +26,17 @@ contract Publisher is Role {
 		return res;
 	}
 
-	function buyContent(uint catalogueId) isRole('ArtefHack') returns (bytes32 content, uint pref) {
-		balances.pay(tx.origin, address(this), 1);
+	function setPublisher(address _publisher) isRole('Admin') {
+		publisher = _publisher;
+	}
+
+	function buyContent(address _from, uint catalogueId) returns (bytes32 content, uint pref) {
+		require(publisher > 0);
+		balances.pay(_from, publisher, int(PUBLISHER_COMPENSATION));
 		uint preference;
 		uint idx;
 		(preference, idx) = catalogue.get(catalogueId);
+
 		return (contents[catalogueId], preference);
 	}
 }

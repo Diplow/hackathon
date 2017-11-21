@@ -26,6 +26,8 @@ contract DataProvider is Role {
 
 		balances.pay(tx.origin, user, COST);
 
+		
+
 		return res;
 	}
 

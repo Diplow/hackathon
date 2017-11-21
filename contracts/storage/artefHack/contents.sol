@@ -8,8 +8,8 @@ contract ArtefHackContentStorage {
     uint idx;
   }
 
-  mapping(bytes32 => ArtefHackContent) private contents;
-  bytes32[] private index;
+  mapping(bytes32 => ArtefHackContent) public contents;
+  bytes32[] public index;
 
   function exists(bytes32 identifier) public constant returns(bool) {
     return (index.length != 0 && index[contents[identifier].idx] == identifier);
@@ -41,7 +41,7 @@ contract ArtefHackContentStorage {
     return true;
   }
 
-  function count() public constant returns(uint) {
+  function count() returns(uint) {
     return index.length;
   }
 

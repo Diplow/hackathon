@@ -10,7 +10,7 @@ import '../utils/utils.sol';
 
 contract ArtefHack is Role {
 	Balances private balances;
-  address public advertiser;
+	address public artefhack;
 
   DataProvider public dataProvider;
   Publisher public publisher;
@@ -29,39 +29,39 @@ contract ArtefHack is Role {
     dataProvider = DataProvider(_dataProvider);
 	}
 
-  function setAdvertiser(address adv) {
-    advertiser = adv;
-  }
-
 	function publish(uint catalogueId) {
 		uint preference;
 		bytes32 content;
-    (content, preference) = publisher.buyContent(catalogueId);
+    (content, preference) = publisher.buyContent(artefhack, catalogueId);
 		contents.insert(content, preference);
 	}
 
+	function setArtefHack(address _artefhack) isRole('Admin'){
+		artefhack = _artefhack;
+	}
+
 	function visit() returns (bytes32, bool) {
-<<<<<<< HEAD
-		// if (!users.exists(tx.origin)) {
-		//   users.init(tx.origin);
-		// }
-		// bytes32 content = users.getNextContent(tx.origin);
-		// bool message = users.sendMessage(tx.origin);
-    bytes32 content = Utils.stringToBytes32("ZQRNQFIDOR");
+		require(artefhack > 0);
+
+		if(contents.count() == 0 ){
+			publish(0);
+		}
+		
+    bytes32 content = contents.getAt(0);
     bool message = true;
-    if (message) {
-      balances.pay(advertiser, address(this), ADVERTISING_COST);
-    }
+
     return (content, message);
 	}
 
 	function eval(bytes32 content, int score) {
 		// update user preference
-		if (score < 0) {
-			balances.pay(address(this), tx.origin, LIKE_COMPENSATION);
+
+		// TODO above code is to be removed
+		/*if (score < 0) {
+			balances.pay(artefhack, tx.origin, LIKE_COMPENSATION);
 		}
 		if (score > 0) {
-      balances.pay(tx.origin, address(this), DISLIKE_COMPENSATION);
-		}
+      balances.pay(artefhack, address(this), DISLIKE_COMPENSATION);
+		}*/
 	}
 }
