@@ -8,12 +8,12 @@ import '../utils/utils.sol';
 
 contract DataProvider is Role {
 	Users public users;
-  Balances private balances;
+  	Balances private balances;
 	int public COST = 1;
 
 	function DataProvider(address _users, address _balances, address _roles) Role(_roles){
 		users = Users(_users);
-    balances = Balances(_balances);
+    	balances = Balances(_balances);
 	}
 
 	function buyUserData(address user) isRole('ArtefHack') returns (uint preference) {
@@ -21,13 +21,10 @@ contract DataProvider is Role {
 
 		uint res;
 		bool message;
-    uint idx;
+    	uint idx;
 		(preference, message, idx) = users.get(user);
 
 		balances.pay(tx.origin, user, COST);
-
-		
-
 		return res;
 	}
 
@@ -35,7 +32,7 @@ contract DataProvider is Role {
 		return users.insert(tx.origin, preference, message);
 	}
 
-  function removeUserData() returns (bool success) {
-    return users.remove(tx.origin);
-  }
+	function removeUserData() returns (bool success) {
+    	return users.remove(tx.origin);
+  	}
 }

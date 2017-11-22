@@ -5,6 +5,7 @@ contract ArtefHackContentStorage {
 
   struct ArtefHackContent {
     uint preference;
+    uint catalogueId;
     uint idx;
   }
 
@@ -15,9 +16,19 @@ contract ArtefHackContentStorage {
     return (index.length != 0 && index[contents[identifier].idx] == identifier);
   }
 
-  function insert(bytes32 identifier, uint preference) public returns(uint idx) {
+  function alreadybought(uint catalogueId) returns (bool) {
+    for (uint i = 0; i < contents.length; ++i) {
+      if (contents[i].catalogueId == catalogueId) {
+        return true
+      }
+    }
+    return false;
+  }
+
+  function insert(bytes32 identifier, uint catalogueId, uint preference) public returns(uint idx) {
     require(!exists(identifier));
     contents[identifier].preference = preference;
+    contents[identifier].catalogueId = catalogueId;
     contents[identifier].idx = index.push(identifier)-1;
     return index.length-1;
   }
@@ -27,6 +38,7 @@ contract ArtefHackContentStorage {
 
     return(
       contents[identifier].preference,
+      contents[identifier].catalogueId,
       contents[identifier].idx
     );
   }
