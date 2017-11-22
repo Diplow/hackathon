@@ -1,30 +1,46 @@
 #generate data here
 import json
 import math
+import numpy as np
 import random
 import string
 
 ADVERTISER_COUNT = 1
 PUBLISHERS_COUNT = 1
-CONTENTS_COUNT = 100
+CONTENTS_COUNT = 400
 USERS_COUNT = 1000
 
-def xUsers():
-    previous_accounts = ADVERTISER_COUNT + PUBLISHERS_COUNT + 1 + 1 # ArtefHack and Admin
+def generate_users(publisher_count, user_count):
+    with open('./users.json' ,'w') as f:
+        users = {"users":{}}
+        users["users"] = {
+            i: usr for i, usr in xUsers(
+                generate_preferences(USERS_COUNT)
+            )
+        }
+        json.dump(users, f)
+
+def xUsers(preferences):
+    previous_accounts = ADVERTISER_COUNT + PUBLISHERS_COUNT + 1 + 1 # ArtefHack and Admin accounts
     for i in range(previous_accounts, USERS_COUNT + previous_accounts):
         yield str(i), {
-          "preference": random.randint(0, 100),
+          "preference": preferences[i-previous_accounts],
           "message": True if 10 * random.random() > 3 else False,
           "seen_contents" : [],
           "satisfaction": 0,
           "failures": 0
         }
 
-def generate_users(publisher_count, user_count):
-    with open('./users.json' ,'w') as f:
-        users = {"users":{}}
-        users["users"] = {i: usr for i, usr in xUsers()}
-        json.dump(users, f)
+def generate_preferences(TOTAL_USERS_COUNT):
+    # generate our skewed user base
+    pop1 = [math.fabs(i) for i in np.random.normal(20, 5, 0.15*TOTAL_USERS_COUNT)]
+    pop2 = [math.fabs(i) for i in np.random.normal(45, 4, 0.25*TOTAL_USERS_COUNT)]
+    pop3 = [math.fabs(i) for i in np.random.normal(80, 3, 0.3*TOTAL_USERS_COUNT)]
+    random_rest = [random.randint(0, 100) for i in range(0, 0.3*TOTAL_USERS_COUNT)]
+
+    tot_users = pop1 + pop2 + pop3 + random_rest
+    random.shuffle(tot_users)
+    return tot_users
 
 def generate_contents(publisher_count, contents_count):
     contents = {

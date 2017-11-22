@@ -32,17 +32,13 @@ def setup_users(whole_dataset, count, overhead=0):
     	data[str(i)] = whole_dataset[str(i)]
     return data
 
-# we might not allow users to sell their data
-# def insert_users(contract_instances, current_users, accounts, count):
-#     for el in current_users:
-#     	contract_instances['DataProvider'].insertUserData(
-#     		current_users[el]['preference'],
-#     		current_users[el]['likes_ads'],
-#     		transact={
-#     			'from':accounts[int(el)],
-#     			'gas': 200000
-#     		}
-#     	)
+def insert_users(contract_instances, current_users, accounts, count):
+    for el in current_users:
+    	contract_instances['DataProvider'].transact(
+			{'from':accounts[int(el)],'gas': 200000}
+		).insertUserData(
+    		current_users[el]['preference'],
+    		current_users[el]['message'])
 
 def insert_contents(contract_instances, contents, admin_address):
     for el in contents:
@@ -51,8 +47,7 @@ def insert_contents(contract_instances, contents, admin_address):
 			'gas': 200000
 		}).insertContent(
     		bytearray(el['id'], 'utf-8'),
-    		el['preference']
-    	)
+    		el['preference'])
 
 def set_stakeholders(contract_instances, accounts):
 	contract_instances['ArtefHack'].transact({'from': accounts[0], 'gas':200000}).setArtefHack(accounts[1])
@@ -73,10 +68,10 @@ def set_roles(contract_instances, accounts):
 def set_balances(contract_instances, accounts):
 	# create balances for all addresses
 	for ad in accounts:
-		contract_instances['Balances'].transact({'from': accounts[0], 'gas':1000000}).create(ad)
+		contract_instances['Balances'].transact({'from': accounts[0], 'gas':200000}).create(ad)
 
 	# fund admin's balance
-	contract_instances['Balances'].transact({'from': accounts[0], 'gas':1000000}).fund(1000000)
+	contract_instances['Balances'].transact({'from': accounts[0], 'gas':200000}).fund(1000000)
 
 	# set initial balance for stakeholders
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[1], 1000)
@@ -100,12 +95,11 @@ def log_results(visits, satisfied_visits, publisher_revenue, ad_views):
     )
 
     print(
-        'Your score is {}'.format(
-        generate_score(visits, satisfied_visits, publisher_revenue, ad_views)
+		'Your score is {}'.format(
+        	generate_score(visits, satisfied_visits, publisher_revenue)
         )
     )
     print('')
 
-def generate_score(visits, satisfied_visits, publisher_revenue, ad_views):
-    # TODO improve score calculation formula
-    return visits + satisfied_visits + publisher_revenue + ad_views
+def generate_score(visits, satisfied_visits, publisher_revenue):
+    return visits + satisfied_visits + 100 * publisher_revenue

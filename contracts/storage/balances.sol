@@ -24,7 +24,7 @@ contract Balances {
   }
 
   function create(address addr) public {
-    /*require(!exists(addr));*/
+    require(!exists(addr));
     balances[addr].idx = index.push(addr)-1;
     balances[addr].balance = 0;
   }
@@ -40,7 +40,7 @@ contract Balances {
   }
 
   function exists(address addr) constant returns(bool) {
-    return(index.length > 0 && index[balances[addr].idx] > 0);
+    return (index.length > 0 && index[balances[addr].idx] == address)
   }
 
   function getBalance(address addr) returns(int) {

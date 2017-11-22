@@ -30,17 +30,15 @@ if FIRST_RUN:
 	print('\033[1mSetup of the simulation\033[0m')
 	print('')
 
-	# we might not make users able to sell their data
-	# TODO remove DataProvider.sol?
-	# print('Inserting users...')
-	# insert_users(
-	# 	contract_instances,
-	# 	current_users,
-	# 	accounts,
-	# 	STARTING_USERS_COUNT
-	# )
-	# print('Done! {} users have been created'.format(STARTING_USERS_COUNT))
-	# print('')
+	print('Inserting users...')
+	insert_users(
+		contract_instances,
+		current_users,
+		accounts,
+		STARTING_USERS_COUNT
+	)
+	print('Done! {} users have been created'.format(STARTING_USERS_COUNT))
+	print('')
 
 	# make contents available in the catalogue
 	print('Inserting contents...')

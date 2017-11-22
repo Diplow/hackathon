@@ -12,6 +12,7 @@ contract Publisher is Role {
 	Balances public balances;
 	Catalogue public catalogue;
 	bytes32[] public contents;
+	
 	uint PUBLISHER_COMPENSATION = 50;
 
 	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles){
