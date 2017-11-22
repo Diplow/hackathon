@@ -40,7 +40,7 @@ contract Balances {
   }
 
   function exists(address addr) constant returns(bool) {
-    return (index.length > 0 && index[balances[addr].idx] == address)
+    return (index.length > 0 && index[balances[addr].idx] == addr);
   }
 
   function getBalance(address addr) returns(int) {
