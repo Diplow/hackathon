@@ -5,8 +5,13 @@ import '../utils/utils.sol';
 
 contract Balances {
 
+  struct Balance {
+    int balance;
+    uint idx;
+  }
+
   address owner;
-  mapping(address => int) public balances;
+  mapping(address => Balance) public balances;
   address[] index;
 
   function Balances() {
@@ -19,13 +24,13 @@ contract Balances {
   }
 
   function create(address addr) public {
-    require(!exists(addr));
-    index.push(addr);
-    balances[addr] = 0;
+    /*require(!exists(addr));*/
+    balances[addr].idx = index.push(addr)-1;
+    balances[addr].balance = 0;
   }
 
   function pay(address from, address to, int value) public returns (bool success) {
-    if (!(exists(from) && balances[from] > value && exists(to))) {
+    if (!(exists(from) && balances[from].balance > value && exists(to))) {
       return false;
     }
     updateBalance(from, -value);
@@ -35,17 +40,15 @@ contract Balances {
   }
 
   function exists(address addr) constant returns(bool) {
-    for (uint i=0; i<index.length; i++) {
-      if (index[i] == addr) { return true; }
-    }
-    return false;
+    return(index.length > 0 && index[balances[addr].idx] > 0);
   }
 
   function getBalance(address addr) returns(int) {
-    return balances[addr];
+    require(exists(addr));
+    return balances[addr].balance;
   }
 
   function updateBalance(address addr, int updateAmount) private {
-      balances[addr] = int(balances[addr]) + updateAmount;
+      balances[addr].balance = balances[addr].balance + updateAmount;
   }
 }

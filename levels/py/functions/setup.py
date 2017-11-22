@@ -83,8 +83,8 @@ def set_balances(contract_instances, accounts):
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[3], 50000)
 
 	# set initial balance for all other users
-	# for u in range(4, len(accounts)):
-	# 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[u], 50)
+	for u in range(4, len(accounts)):
+		contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[u], 50)
 
 def log_results(visits, satisfied_visits, publisher_revenue, ad_views):
     print('')
