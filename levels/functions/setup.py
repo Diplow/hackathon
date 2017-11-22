@@ -4,7 +4,7 @@ import random
 import string
 
 def contract_deploy_data(contract):
-	with open('../../build/contracts/{}.json'.format(contract)) as f:
+	with open('../build/contracts/{}.json'.format(contract)) as f:
 		deploy_data = json.load(f)
 	return deploy_data
 
@@ -102,4 +102,4 @@ def log_results(visits, satisfied_visits, publisher_revenue, ad_views):
     print('')
 
 def generate_score(visits, satisfied_visits, publisher_revenue):
-    return visits + satisfied_visits + 100 * publisher_revenue
+    return int(visits + satisfied_visits + publisher_revenue / 10)
