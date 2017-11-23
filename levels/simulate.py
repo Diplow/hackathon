@@ -25,7 +25,7 @@ def run(setup, starting_users_count, max_users_count, days_count, contents_count
 	# setup users and contents
 	users = load_data("users")
 	users = {
-		str(el): users[str(el)] for el in range(4, 4 + max_users_count)
+		str(el): users[str(el)] for el in range(USERS_STARTING_INDEX, USERS_STARTING_INDEX + max_users_count)
 	}
 	contents = load_data("contents")
 	contents = contents[0:contents_count]

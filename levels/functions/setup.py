@@ -5,6 +5,8 @@ import json
 #      accounts[2] => Publisher address
 #      accounts[3] => Advertiser address
 
+USERS_STARTING_INDEX = 4
+
 def verify_input_arguments(starting_users_count, max_users_count, days_count, contents_count):
 	if days_count <= 0 or days_count > 100:
 		raise ValueError("The simulation must last between 1 and 100 days")
@@ -73,7 +75,7 @@ def set_roles(contract_instances, accounts, users_count):
 	    contract_instances['RolesStorage'].transact(
 			{'from':accounts[0], 'gas':100000}
 		).setRole(accounts[idx + 1], role)
-	for u in range(4, 4 + users_count):
+	for u in range(USERS_STARTING_INDEX, USERS_STARTING_INDEX + users_count):
 		contract_instances['RolesStorage'].transact(
 			{'from':accounts[0], 'gas':100000}
 		).setRole(accounts[u], 'User')
@@ -91,7 +93,7 @@ def set_balances(contract_instances, accounts, users_count):
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[3], 50000)
 
 	# set initial balance for all other users
-	for u in range(4, 4 + users_count):
+	for u in range(USERS_STARTING_INDEX, USERS_STARTING_INDEX + users_count):
 		contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[u], 50)
 
 def log_results(visits, satisfied_visits, publisher_revenue, ad_views):
