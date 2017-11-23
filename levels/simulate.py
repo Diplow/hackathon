@@ -1,5 +1,4 @@
 import click
-import json
 from web3 import Web3, HTTPProvider
 
 from functions.setup import *
@@ -9,9 +8,14 @@ USERS_STARTING_INDEX = 4
 
 @click.command()
 @click.option('--setup', type=bool, default=True)
-@click.option('--users-count', type=int, default=100)
+@click.option('--starting-users-count', type=int, default=100)
+@click.option('--max-users-count', type=int, default=1000)
 @click.option('--days-count', type=int, default=100)
-def run(setup, users_count, days_count):
+@click.option('--contents-count', type=int, default=400)
+def run(setup, starting_users_count, max_users_count, days_count, contents_count):
+
+	verify_input_arguments(starting_users_count, max_users_count, days_count, contents_count)
+
 	provider = HTTPProvider('http://localhost:8545')
 	web3 = Web3(provider)
 
@@ -20,13 +24,18 @@ def run(setup, users_count, days_count):
 
 	# setup users and contents
 	users = load_data("users")
+	users = {
+		str(el): users[str(el)] for el in range(4, 4 + max_users_count)
+	}
 	contents = load_data("contents")
+	contents = contents[0:contents_count]
 	users_contents_matrix = load_data("users_contents_matrix")
 	current_users = setup_users(
 		users,
-		users_count,
+		starting_users_count,
 		USERS_STARTING_INDEX
 	)
+	users_involved = starting_users_count
 	current_contents = []
 
 	if setup:
@@ -34,19 +43,19 @@ def run(setup, users_count, days_count):
 		print('\033[1mSetup of the simulation\033[0m')
 		print('')
 
+		print('Setting roles')
+		set_roles(contract_instances, accounts, len(users))
+		print('Done! Roles have been set for the stakeholders and {} users'.format(len(users)))
+		print('')
+
 		print('Inserting users...')
-		insert_users(
-			contract_instances,
-			current_users,
-			accounts,
-			users_count
-		)
-		print('Done! {} users have been created'.format(users_count))
+		insert_users(contract_instances, users, accounts)
+		print('Done! {} users have been created'.format(len(users)))
 		print('')
 
 		# make contents available in the catalogue
 		print('Inserting contents...')
-		insert_contents(contract_instances, contents, accounts[0])
+		insert_contents(contract_instances, contents, accounts)
 		print('Done! {} contents have been created'.format(len(contents)))
 		print('')
 
@@ -55,14 +64,10 @@ def run(setup, users_count, days_count):
 		print('Done!')
 		print('')
 
-		print('Setting roles')
-		set_roles(contract_instances, accounts)
-		print('Done! Roles have been set for {} addresses'.format(len(accounts)))
-		print('')
-
 		print('Setting and funding balances')
-		set_balances(contract_instances, accounts)
-		print('Done! ArtefHack received 1000 tokens, the Advertiser received 50000 tokens, and each user received 50 tokens')
+		set_balances(contract_instances, accounts, max_users_count)
+		print('Done! Balances have been created for the stakeholders and {} users'.format(max_users_count))
+		print('ArtefHack received 1000 tokens, the Advertiser received 50000 tokens, and each user received 50 tokens')
 		print('')
 
 
@@ -75,11 +80,12 @@ def run(setup, users_count, days_count):
 	for i in range(0, days_count):
 
 		print('Day {}'.format(i+1))
-		d_visits, s_visits, d_views = one_day(
+		d_visits, s_visits, d_views, users_involved = one_day(
 			contract_instances,
 			accounts,
 			current_users,
 			users,
+			users_involved,
 			current_contents,
 			contents,
 			users_contents_matrix

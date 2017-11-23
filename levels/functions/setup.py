@@ -1,7 +1,21 @@
-from web3.contract import ConciseContract
 import json
-import random
-import string
+
+# NB : accounts[0] => Admin address
+#      accounts[1] => ArtefHack address
+#      accounts[2] => Publisher address
+#      accounts[3] => Advertiser address
+
+def verify_input_arguments(starting_users_count, max_users_count, days_count, contents_count):
+	if days_count <= 0 or days_count > 100:
+		raise ValueError("The simulation must last between 1 and 100 days")
+	if starting_users_count <= 0 or starting_users_count > 1000:
+		raise ValueError("There must be between 1 and 1000 users at the start of the simulation")
+	if max_users_count <= 0 or max_users_count > 1000:
+		raise ValueError("There must be between 1 and 1000 total users in the simulation")
+	if starting_users_count > max_users_count:
+		raise ValueError("There can't be more users at the start of the simulation than the total number of users")
+	if contents_count <= 0 or contents_count > 400:
+		raise ValueError("There must be between 1 and 400 users")
 
 def contract_deploy_data(contract):
 	with open('../build/contracts/{}.json'.format(contract)) as f:
@@ -32,40 +46,39 @@ def setup_users(whole_dataset, count, overhead=0):
     	data[str(i)] = whole_dataset[str(i)]
     return data
 
-def insert_users(contract_instances, current_users, accounts, count):
-    for el in current_users:
+def insert_users(contract_instances, users, accounts):
+    for el in users:
     	contract_instances['DataProvider'].transact(
-			{'from':accounts[int(el)],'gas': 200000}
+			{'from': accounts[int(el)],'gas': 200000}
 		).insertUserData(
-    		current_users[el]['preference'],
-    		current_users[el]['message'])
+    		users[el]['preference'],
+    		users[el]['message']
+		)
 
-def insert_contents(contract_instances, contents, admin_address):
+def insert_contents(contract_instances, contents, accounts):
     for el in contents:
-    	contract_instances['Publisher'].transact({
-			'from':admin_address,
-			'gas': 200000
-		}).insertContent(
+    	contract_instances['Publisher'].transact(
+			{'from': accounts[2], 'gas': 200000}
+		).insertContent(
     		bytearray(el['id'], 'utf-8'),
-    		el['preference'])
+    		el['preference']
+		)
 
 def set_stakeholders(contract_instances, accounts):
 	contract_instances['ArtefHack'].transact({'from': accounts[0], 'gas':200000}).setArtefHack(accounts[1])
 	contract_instances['Publisher'].transact({'from': accounts[0], 'gas':200000}).setPublisher(accounts[2])
 
-def set_roles(contract_instances, accounts):
+def set_roles(contract_instances, accounts, users_count):
 	for idx, role in enumerate(['ArtefHack', 'Publisher', 'Advertiser']):
-	    contract_instances['RolesStorage'].transact({
-			'from':accounts[0],
-			'gas':100000}
+	    contract_instances['RolesStorage'].transact(
+			{'from':accounts[0], 'gas':100000}
 		).setRole(accounts[idx + 1], role)
-	for u in range(4, len(accounts)):
-	    contract_instances['RolesStorage'].transact({
-			'from':accounts[0],
-			'gas':100000}
+	for u in range(4, 4 + users_count):
+		contract_instances['RolesStorage'].transact(
+			{'from':accounts[0], 'gas':100000}
 		).setRole(accounts[u], 'User')
 
-def set_balances(contract_instances, accounts):
+def set_balances(contract_instances, accounts, users_count):
 	# create balances for all addresses
 	for ad in accounts:
 		contract_instances['Balances'].transact({'from': accounts[0], 'gas':200000}).create(ad)
@@ -78,7 +91,7 @@ def set_balances(contract_instances, accounts):
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[3], 50000)
 
 	# set initial balance for all other users
-	for u in range(4, len(accounts)):
+	for u in range(4, 4 + users_count):
 		contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[u], 50)
 
 def log_results(visits, satisfied_visits, publisher_revenue, ad_views):

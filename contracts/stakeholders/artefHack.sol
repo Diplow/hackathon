@@ -36,32 +36,24 @@ contract ArtefHack is Role {
 		contents.insert(content, preference);
 	}
 
-	function setArtefHack(address _artefhack) isRole('Admin'){
+	function setArtefHack(address _artefhack) isRole('Admin') {
 		artefhack = _artefhack;
 	}
 
-	function visit() returns (bytes32, bool) {
+	function visit() isRole('User') returns (bytes32, bool) {
 		require(artefhack > 0);
 
 		if(contents.count() == 0 ){
 			publish(0);
 		}
-		
+
     bytes32 content = contents.getAt(0);
     bool message = true;
 
     return (content, message);
 	}
 
-	function eval(bytes32 content, int score) {
-		// update user preference
-
-		// TODO above code is to be removed
-		/*if (score < 0) {
-			balances.pay(artefhack, tx.origin, LIKE_COMPENSATION);
-		}
-		if (score > 0) {
-      balances.pay(artefhack, address(this), DISLIKE_COMPENSATION);
-		}*/
+	function eval(bytes32 content, int score) isRole('User') {
+		// TODO
 	}
 }

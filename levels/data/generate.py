@@ -36,7 +36,7 @@ def generate_preferences(TOTAL_USERS_COUNT):
     pop1 = [math.fabs(i) for i in np.random.normal(20, 5, 0.15*TOTAL_USERS_COUNT)]
     pop2 = [math.fabs(i) for i in np.random.normal(45, 4, 0.25*TOTAL_USERS_COUNT)]
     pop3 = [math.fabs(i) for i in np.random.normal(80, 3, 0.3*TOTAL_USERS_COUNT)]
-    random_rest = [random.randint(0, 100) for i in range(0, 0.3*TOTAL_USERS_COUNT)]
+    random_rest = [random.randint(0, 99) for i in range(0, 0.3*TOTAL_USERS_COUNT)]
 
     tot_users = pop1 + pop2 + pop3 + random_rest
     random.shuffle(tot_users)
@@ -49,7 +49,7 @@ def generate_contents(publisher_count, contents_count):
     for i in range(0, contents_count):
         contents["contents"].append({
             "id": ''.join(random.choices(string.ascii_uppercase, k=10)),
-            "preference": random.randint(0, 100)
+            "preference": random.randint(0, 99)
         })
     with open('./contents.json', 'w') as f:
         json.dump(contents, f)
