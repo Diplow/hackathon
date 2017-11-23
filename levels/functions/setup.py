@@ -89,7 +89,7 @@ def set_balances(contract_instances, accounts, users_count):
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':200000}).fund(1000000)
 
 	# set initial balance for stakeholders
-	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[1], 1000)
+	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[1], 2500)
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[3], 50000)
 
 	# set initial balance for all other users
