@@ -7,7 +7,7 @@ import string
 
 ADVERTISER_COUNT = 1
 PUBLISHERS_COUNT = 1
-CONTENTS_COUNT = 400
+CONTENTS_COUNT = 600
 USERS_COUNT = 1000
 
 def generate_users(publisher_count, user_count):
@@ -15,7 +15,7 @@ def generate_users(publisher_count, user_count):
         users = {"users":{}}
         users["users"] = {
             i: usr for i, usr in xUsers(
-                generate_preferences(USERS_COUNT)
+                generate_preferences(user_count)
             )
         }
         json.dump(users, f)
