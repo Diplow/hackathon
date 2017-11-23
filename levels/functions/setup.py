@@ -27,7 +27,7 @@ def contract_deploy_data(contract):
 def setup_contract_instances(web3):
     contract_metadata = {}
     contract_instances = {}
-    for el in ['ArtefHack', 'Balances', 'DataProvider', 'Publisher', 'RolesStorage']:
+    for el in ['ArtefHack', 'Balances', 'Publisher', 'RolesStorage']:
         contract_metadata[el] = contract_deploy_data(el)
         network_id = list(contract_metadata[el]["networks"].keys())[-1]
         contract_instances[el] = web3.eth.contract(

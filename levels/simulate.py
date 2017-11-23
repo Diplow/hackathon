@@ -49,10 +49,10 @@ def run(setup, starting_users_count, max_users_count, days_count, contents_count
 		print('Done! Roles have been set for the stakeholders and {} users'.format(len(users)))
 		print('')
 
-		print('Inserting users...')
-		insert_users(contract_instances, users, accounts)
-		print('Done! {} users have been created'.format(len(users)))
-		print('')
+		# print('Inserting users...')
+		# insert_users(contract_instances, users, accounts)
+		# print('Done! {} users have been created'.format(len(users)))
+		# print('')
 
 		# make contents available in the catalogue
 		print('Inserting contents...')
