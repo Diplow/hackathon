@@ -1,6 +1,6 @@
 #generate data here
 import json
-import math
+from math import fabs
 import numpy as np
 import random
 import string
@@ -33,10 +33,10 @@ def xUsers(preferences):
 
 def generate_preferences(TOTAL_USERS_COUNT):
     # generate our skewed user base
-    pop1 = [math.fabs(i) for i in np.random.normal(20, 5, 0.15*TOTAL_USERS_COUNT)]
-    pop2 = [math.fabs(i) for i in np.random.normal(45, 4, 0.25*TOTAL_USERS_COUNT)]
-    pop3 = [math.fabs(i) for i in np.random.normal(80, 3, 0.3*TOTAL_USERS_COUNT)]
-    random_rest = [random.randint(0, 99) for i in range(0, 0.3*TOTAL_USERS_COUNT)]
+    pop1 = [int(round(i)) for i in np.random.normal(20, 5, int(0.15*TOTAL_USERS_COUNT))]
+    pop2 = [int(round(i)) for i in np.random.normal(45, 4, int(0.25*TOTAL_USERS_COUNT))]
+    pop3 = [int(round(i)) for i in np.random.normal(80, 3, int(0.3*TOTAL_USERS_COUNT))]
+    random_rest = [random.randint(0, 99) for i in range(0, int(0.3*TOTAL_USERS_COUNT))]
 
     tot_users = pop1 + pop2 + pop3 + random_rest
     random.shuffle(tot_users)
@@ -64,7 +64,7 @@ def generate_users_contents_matrix():
         for us in users:
             users_content_matrix["users_contents_matrix"][us] = {}
             for co in contents:
-                users_content_matrix["users_contents_matrix"][us][co["id"]] = 1 if (math.fabs(users[us]["preference"] - co["preference"]) < 10) else 0
+                users_content_matrix["users_contents_matrix"][us][co["id"]] = 1 if (fabs(users[us]["preference"] - co["preference"]) < 10) else 0
 
     with open('./users_contents_matrix.json', 'w') as f:
         json.dump(users_content_matrix, f)

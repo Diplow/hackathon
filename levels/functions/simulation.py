@@ -22,8 +22,13 @@ def one_day(contract_instances, accounts, current_users, users, users_involved, 
             # update output variables
             daily_visits += 1
             daily_ad_views += 1 if message else 0
-            sat = adjust_user_satisfaction(visited_content, message, u, current_users, users_contents_matrix)
-            daily_satisfied_visits += sat
+            daily_satisfied_visits += adjust_user_satisfaction(
+                visited_content,
+                message,
+                u,
+                current_users,
+                users_contents_matrix
+            )
 
             # append the seen content to current_contents
             update_contents(visited_content, current_contents)
@@ -36,10 +41,10 @@ def one_day(contract_instances, accounts, current_users, users, users_involved, 
 
 def visit(contract_instances, user_address, advertiser_address, artefhack_address):
     # call to get the results of our query
-    visited_content, message = contract_instances['ArtefHack'].call({'from':user_address, 'gas': 200000}).visit()
+    visited_content, message = contract_instances['ArtefHack'].call({'from':user_address, 'gas': 4000000}).visit()
     # transaction to insert our query in the blockchain
     # max gas cost is high to prevent the arbitrary complicated implementations of candidates to run out of gas ;)
-    contract_instances['ArtefHack'].transact({'from':user_address, 'gas': 2000000}).visit()
+    contract_instances['ArtefHack'].transact({'from':user_address, 'gas': 4000000}).visit()
 
     # the advertiser pays ArtefHack if a message is shown
     if message:
@@ -75,8 +80,9 @@ def adjust_user_satisfaction(visited_content, message, user_index, current_users
     # else we return the reaction of the user to the content
     else:
         add_user_content(visited_content, user_index, current_users)
-        current_users[user_index]['satisfaction'] -= 1
-        return users_contents_matrix[user_index][visited_content.replace('\x00', '')]
+        user_satisfaction = users_contents_matrix[user_index][visited_content.replace('\x00', '')]
+        current_users[user_index]['satisfaction'] += 1 if user_satisfaction else -1
+        return user_satisfaction
 
 def add_user_content(visited_content, user_index, current_users):
     current_users[user_index]['seen_contents'].append(
@@ -86,7 +92,7 @@ def add_user_content(visited_content, user_index, current_users):
 def update_user_base(user_index, current_users, users, users_involved):
     # if a user is very satisfied with the platform, she will recommend it to friends
     if (current_users[user_index]['satisfaction'] >= SATISFACTION_TO_GROW_USER_BASE) and (users_involved < len(users)):
-        current_users[str(len(current_users))] = users[users_involved]
+        current_users[str(users_involved)] = users[str(users_involved)]
         users_involved+=1
     # if a user is very disatisfied with the platform, she will never use it again
     elif current_users[user_index]['failures'] >= FAILURES_TO_REDUCE_USER_BASE:
