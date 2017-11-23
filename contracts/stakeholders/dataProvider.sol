@@ -16,7 +16,7 @@ contract DataProvider is Role {
     	balances = Balances(_balances);
 	}
 
-	function buyUserData(address user) isRole('ArtefHack') public returns (uint preference) {
+	function buyUserData(address user) public returns (uint preference) {
 		require(users.exists(user));
 
 		uint res;
@@ -28,11 +28,11 @@ contract DataProvider is Role {
 		return res;
 	}
 
-	function insertUserData(uint preference, bool message) public returns (uint idx) {
+	function insertUserData(uint preference, bool message) isRole('User') public returns (uint idx) {
 		return users.insert(tx.origin, preference, message);
 	}
 
-	function removeUserData() public returns (bool success) {
+	function removeUserData() isRole('Admin') public returns (bool success) {
     	return users.remove(tx.origin);
   	}
 }

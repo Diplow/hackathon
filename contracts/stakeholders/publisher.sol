@@ -12,6 +12,7 @@ contract Publisher is Role {
 	Balances public balances;
 	Catalogue public catalogue;
 	bytes32[] public contents;
+
 	uint PUBLISHER_COMPENSATION = 50;
 
 	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles) public{
@@ -19,7 +20,7 @@ contract Publisher is Role {
 		balances = Balances(_balances);
 	}
 
-	function insertContent(bytes32 identifier, uint preference) public returns (uint idx) {
+	function insertContent(bytes32 identifier, uint preference) isRole('Publisher') public returns (uint idx) {
 		// TODO test indexes
 		uint res = contents.push(identifier)-1;
 		catalogue.insert(res, preference);

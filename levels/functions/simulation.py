@@ -21,8 +21,13 @@ def one_day(contract_instances, accounts, current_users, users, users_involved, 
             # update output variables
             daily_visits += 1
             daily_ad_views += 1 if message else 0
-            sat = adjust_user_satisfaction(visited_content, message, u, current_users, users_contents_matrix)
-            daily_satisfied_visits += sat
+            daily_satisfied_visits += adjust_user_satisfaction(
+                visited_content,
+                message,
+                u,
+                current_users,
+                users_contents_matrix
+            )
 
             # append the seen content to current_contents
             update_contents(visited_content, current_contents)
@@ -76,7 +81,7 @@ def adjust_user_satisfaction(visited_content, message, user_index, current_users
     else:
         add_user_content(visited_content, user_index, current_users)
         user_satisfaction = users_contents_matrix[user_index][visited_content.replace('\x00', '')]
-        current_users[user_index]['satisfaction'] += 1 if user_satisfaction else -1 
+        current_users[user_index]['satisfaction'] += 1 if user_satisfaction else -1
         return user_satisfaction
 
 def add_user_content(visited_content, user_index, current_users):
@@ -87,7 +92,7 @@ def add_user_content(visited_content, user_index, current_users):
 def update_user_base(user_index, current_users, users, users_involved):
     # if a user is very satisfied with the platform, she will recommend it to friends
     if (current_users[user_index]['satisfaction'] >= SATISFACTION_TO_GROW_USER_BASE) and (users_involved < len(users)):
-        current_users[str(len(current_users))] = users[str(users_involved)]
+        current_users[str(users_involved)] = users[str(users_involved)]
         users_involved+=1
     # if a user is very disatisfied with the platform, she will never use it again
     elif current_users[user_index]['failures'] >= FAILURES_TO_REDUCE_USER_BASE:
