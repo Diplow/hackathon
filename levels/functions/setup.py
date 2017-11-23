@@ -16,8 +16,8 @@ def verify_input_arguments(starting_users_count, max_users_count, days_count, co
 		raise ValueError("There must be between 1 and 1000 total users in the simulation")
 	if starting_users_count > max_users_count:
 		raise ValueError("There can't be more users at the start of the simulation than the total number of users")
-	if contents_count <= 0 or contents_count > 400:
-		raise ValueError("There must be between 1 and 400 users")
+	if contents_count <= 0 or contents_count > 800:
+		raise ValueError("There must be between 1 and 800 users")
 
 def contract_deploy_data(contract):
 	with open('../build/contracts/{}.json'.format(contract)) as f:
