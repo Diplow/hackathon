@@ -11,6 +11,7 @@ contract ArtefHackContentStorage {
 
   mapping(bytes32 => ArtefHackContent) public contents;
   mapping(uint => bytes32) public existByCtlg;
+  mapping(uint => bytes32[]) public contentByPref; 
   bytes32[] public index;
 
   function exists(bytes32 identifier) public constant returns(bool) {
@@ -29,7 +30,16 @@ contract ArtefHackContentStorage {
     contents[identifier].catalogueId = catalogueId;
     contents[identifier].idx = index.push(identifier)-1;
     existByCtlg[catalogueId] = identifier;
+    contentByPref[preference].push(identifier);
     return index.length-1;
+  }
+
+  function getByPrefCount(uint pref) public returns(uint) {
+    return contentByPref[pref].length;
+  }
+
+  function getByPrefAt(uint pref, uint at) public returns (bytes32) {
+    return contentByPref[pref][at];
   }
 
   function get(bytes32 identifier) public constant returns(uint preference, uint catalogueId, uint idx) {

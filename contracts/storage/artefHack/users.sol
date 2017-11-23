@@ -27,22 +27,22 @@ contract ArtefHackUserStorage {
       if (score) {
         users[addr].preference = preference;
         users[addr].stage = 1;
+        users[addr].message = true;
       }
       else {
-        users[addr].preference = preference + 10;
+        users[addr].preference = preference + 20;
         users[addr].stage = 0;
       }
     }
     if (users[addr].stage == 1) {
-      if (!score) {
-        users[addr].preference = preference - 6;
-        users[addr].stage = 2;
-        users[addr].message = true;
-      }
+      users[addr].message = score;
+      users[addr].stage = 2;
     }
     if (users[addr].stage == 2) {
-      users[addr].message = score;
-      users[addr].stage = 3;
+      if (!score) {
+        users[addr].preference = preference - 11;
+        users[addr].stage = 3;
+      }
     }
   }
 

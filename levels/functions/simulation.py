@@ -40,10 +40,10 @@ def one_day(contract_instances, accounts, current_users, users, users_involved, 
 
 def visit(contract_instances, user_address, advertiser_address, artefhack_address):
     # call to get the results of our query
-    visited_content, message = contract_instances['ArtefHack'].call({'from':user_address, 'gas': 5000000}).visit()
+    visited_content, message = contract_instances['ArtefHack'].call({'from':user_address, 'gas': 10000000}).visit()
     # transaction to insert our query in the blockchain
     # max gas cost is high to prevent the arbitrary complicated implementations of candidates to run out of gas ;)
-    contract_instances['ArtefHack'].transact({'from':user_address, 'gas': 5000000}).visit()
+    contract_instances['ArtefHack'].transact({'from':user_address, 'gas': 10000000}).visit()
 
     # the advertiser pays ArtefHack if a message is shown
     if message:
@@ -55,7 +55,7 @@ def visit(contract_instances, user_address, advertiser_address, artefhack_addres
     return (visited_content, message)
 
 def evaluate(contract_instances, visited_content, message, user_address, user_index, users_contents_matrix):
-    contract_instances['ArtefHack'].transact({'from': user_address, 'gas': 5000000}).eval(
+    contract_instances['ArtefHack'].transact({'from': user_address, 'gas': 10000000}).eval(
         visited_content,
         message,
         users_contents_matrix[user_index][visited_content.replace('\x00', '')] == 1

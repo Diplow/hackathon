@@ -14,21 +14,19 @@ contract ArtefHack is Role {
 	address public artefhack;
 
 	Catalogue public catalogue;
-	DataProvider public dataProvider;
   	Publisher public publisher;
 	ArtefHackUserStorage private users;
 	ArtefHackContentStorage public contents;
 
-	bytes32[] public initContents;
+	bytes32 public firstContent;
 
   	int ADVERTISING_COST = 1;
 
-	function ArtefHack(address _balances, address _contents, address _users, address _publisher, address _dataProvider, address _roles, address _catalogue) Role(_roles) public {
+	function ArtefHack(address _balances, address _contents, address _users, address _publisher, address _roles, address _catalogue) Role(_roles) public {
 	    balances = Balances(_balances);
 	    contents = ArtefHackContentStorage(_contents);
 	    users = ArtefHackUserStorage(_users);
 	    publisher = Publisher(_publisher);
-	    dataProvider = DataProvider(_dataProvider);
 	    catalogue = Catalogue(_catalogue);
 	}
 
@@ -37,7 +35,7 @@ contract ArtefHack is Role {
 		bytes32 content;
     	(content, preference) = publisher.buyContent(artefhack, catalogueId);
     	if (content == "") {
-    		content = initContents[0];
+    		content = firstContent;
     	}
     	else {
 			contents.insert(content, catalogueId, preference);
@@ -50,8 +48,8 @@ contract ArtefHack is Role {
 	}
 
 	function buyContentByPref(address usr, uint pref, uint maxdist, uint maxdepth) public returns (bytes32 content) {
-		if (maxdepth > 10) {
-			return initContents[0];
+		if (maxdepth > 20) {
+			return firstContent;
 		}
 		maxdepth++;
 		if (maxdist > 99) {
@@ -62,37 +60,34 @@ contract ArtefHack is Role {
 			maxdist = 99;
 		}
 		bytes32 res;
-		uint cnt = catalogue.count();
+		uint cnt = catalogue.getByPrefCount(pref);
 		for (uint i = 0; i < cnt; ++i) {
-			uint idx = catalogue.getAt(i);
 			uint index;
-			uint preference;
-			(preference, index) = catalogue.get(idx);
-			if (preference == pref) {
-				bool abought;
-				(abought, res) = contents.alreadyBought(index);
-				if (abought) {
-					if (!users.hasSeen(usr, res)) {
-						return res;
-					}
-				}
-				else {
-					res = publish(idx);
+			index = catalogue.getByPrefAt(pref, i);
+			uint idx = catalogue.getAt(index);
+			bool abought;
+			(abought, res) = contents.alreadyBought(idx);
+			if (abought) {
+				if (!users.hasSeen(usr, res)) {
 					return res;
 				}
+			}
+			else {
+				res = publish(idx);
+				return res;
 			}
 		}
 		pref += 1;
 		uint retry;
 		if (pref > maxdist) {
-			if (maxdist < 10) {
-				if (maxdist < 6) {
-					return initContents[0];
+			if (maxdist < 20) {
+				if (maxdist < 11) {
+					return firstContent;
 				}
-				return buyContentByPref(usr, 0, 5, maxdepth);
+				return buyContentByPref(usr, 0, 10, maxdepth);
 			}
-			retry = maxdist - 10;
-			maxdist = maxdist - 5;
+			retry = maxdist - 20;
+			maxdist = maxdist - 10;
 		}
 		else {
 			retry = pref;
@@ -102,17 +97,17 @@ contract ArtefHack is Role {
 
 	function visit() public returns (bytes32, bool) {
 		require(artefhack > 0);
-		if (initContents.length == 0) {
-			uint s0 = 5;
+		if (firstContent == "") {
+			uint s0 = 10;
 			uint maxdepth = 0;
-			bytes32 c = buyContentByPref(tx.origin, s0, s0+5, maxdepth);
-			initContents.push(c);
+			bytes32 c = buyContentByPref(tx.origin, s0, s0+10, maxdepth);
+			firstContent = c;
 		}
 		if (!users.exists(tx.origin)) {
-			uint basepref = 5;
+			uint basepref = 10;
 			bool basemsg = false;
 			users.insert(tx.origin, basepref, basemsg);
-			users.addContent(tx.origin, initContents[0]);
+			users.addContent(tx.origin, firstContent);
 		}
 		uint preference;
 		bool message;
@@ -120,6 +115,9 @@ contract ArtefHack is Role {
 		(preference, message, idx) = users.get(tx.origin);
 		bytes32 content;
 		content = users.getContent(tx.origin);
+		if (content == "") {
+			return (firstContent, true);
+		}
     	return (content, message);
 	}
 
@@ -130,7 +128,7 @@ contract ArtefHack is Role {
 		uint maxdepth=0;
 		(preference, ctlg, idx) = contents.get(content);
 		users.updatePref(tx.origin, score, message, preference);
-		bytes32 cc = buyContentByPref(tx.origin, preference, preference+5, maxdepth);
+		bytes32 cc = buyContentByPref(tx.origin, preference, preference+10, maxdepth);
 		require(cc != "");
 		users.addContent(tx.origin, cc);
 	}

@@ -9,7 +9,7 @@ contract RolesStorage {
 
   function RolesStorage() public {
     owner = tx.origin;
-    authorizedRoles = ['Admin', 'Advertiser', 'DataProvider', 'User', 'Publisher', 'ArtefHack'];
+    authorizedRoles = ['Admin', 'Advertiser', 'User', 'Publisher', 'ArtefHack'];
     setRole(tx.origin, 'Admin');
   }
 

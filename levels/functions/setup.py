@@ -27,7 +27,7 @@ def contract_deploy_data(contract):
 def setup_contract_instances(web3):
     contract_metadata = {}
     contract_instances = {}
-    for el in ['ArtefHack', 'Balances', 'DataProvider', 'Publisher', 'RolesStorage']:
+    for el in ['ArtefHack', 'Balances', 'Publisher', 'RolesStorage']:
         contract_metadata[el] = contract_deploy_data(el)
         network_id = list(contract_metadata[el]["networks"].keys())[-1]
         contract_instances[el] = web3.eth.contract(
@@ -47,15 +47,6 @@ def setup_users(whole_dataset, count, overhead=0):
     	data[str(i)] = {}
     	data[str(i)] = whole_dataset[str(i)]
     return data
-
-def insert_users(contract_instances, users, accounts):
-    for el in users:
-    	contract_instances['DataProvider'].transact(
-			{'from': accounts[int(el)],'gas': 200000}
-		).insertUserData(
-    		users[el]['preference'],
-    		users[el]['message']
-		)
 
 def insert_contents(contract_instances, contents, accounts):
     for el in contents:
