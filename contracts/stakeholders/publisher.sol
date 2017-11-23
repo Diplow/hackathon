@@ -14,23 +14,23 @@ contract Publisher is Role {
 	bytes32[] public contents;
 	uint PUBLISHER_COMPENSATION = 50;
 
-	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles){
+	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles) public{
 		catalogue = Catalogue(_catalogue);
 		balances = Balances(_balances);
 	}
 
-	function insertContent(bytes32 identifier, uint preference) returns (uint idx) {
+	function insertContent(bytes32 identifier, uint preference) public returns (uint idx) {
 		// TODO test indexes
 		uint res = contents.push(identifier)-1;
 		catalogue.insert(res, preference);
 		return res;
 	}
 
-	function setPublisher(address _publisher) isRole('Admin') {
+	function setPublisher(address _publisher) isRole('Admin') public {
 		publisher = _publisher;
 	}
 
-	function buyContent(address _from, uint catalogueId) returns (bytes32 content, uint pref) {
+	function buyContent(address _from, uint catalogueId) public returns (bytes32 content, uint pref) {
 		require(publisher > 0);
 		balances.pay(_from, publisher, int(PUBLISHER_COMPENSATION));
 		uint preference;

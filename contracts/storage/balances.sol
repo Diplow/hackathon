@@ -14,7 +14,7 @@ contract Balances {
   mapping(address => Balance) public balances;
   address[] index;
 
-  function Balances() {
+  function Balances() public {
     owner = tx.origin;
   }
 
@@ -39,11 +39,11 @@ contract Balances {
     return true;
   }
 
-  function exists(address addr) constant returns(bool) {
+  function exists(address addr) public constant returns(bool) {
     return(index.length > 0 && index[balances[addr].idx] > 0);
   }
 
-  function getBalance(address addr) returns(int) {
+  function getBalance(address addr) public returns(int) {
     require(exists(addr));
     return balances[addr].balance;
   }

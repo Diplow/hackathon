@@ -14,13 +14,14 @@ contract ArtefHackUserStorage {
 
   // bytes32[] private initContents;
   mapping(address => ArtefHackUser) private users;
+  mapping(bytes32 => bool) public seen;
   address[] private index;
 
   function exists(address addr) public constant returns(bool) {
     return (index.length != 0 && index[users[addr].idx] == addr);
   }
 
-  function updatePref(address addr, bool score, bool message, uint preference) {
+  function updatePref(address addr, bool score, bool message, uint preference) public {
     require(exists(addr));
     if (users[addr].stage == 0) {
       if (score) {
@@ -29,19 +30,25 @@ contract ArtefHackUserStorage {
       }
       else {
         users[addr].preference = preference + 20;
-        users[addr].stage = 0; 
+        users[addr].stage = 0;
       }
     }
     if (users[addr].stage == 1) {
       if (!score) {
         users[addr].preference = preference - 11;
         users[addr].stage = 2;
+        users[addr].message = true;
       }
     }
     if (users[addr].stage == 2) {
       users[addr].message = score;
       users[addr].stage = 3;
     }
+  }
+
+  function hasSeen(address usr, bytes32 content) public returns (bool) {
+    require(exists(usr));
+    return seen[content];
   }
 
   function insert(address addr, uint preference, bool message) public returns(uint idx) {
@@ -56,8 +63,8 @@ contract ArtefHackUserStorage {
     return index.length-1;
   }
 
-  function addContent(address addr, bytes32 content) {
-    require(exists(usr));
+  function addContent(address addr, bytes32 content) public returns(bool) {
+    require(exists(addr));
     for (uint i=0; i < users[addr].contents.length; ++i) {
       if (users[addr].contents[i] == content) {
         return false;
@@ -68,10 +75,11 @@ contract ArtefHackUserStorage {
     return true;
   }
 
-  function getContent(address usr) returns (bytes32 content) {
+  function getContent(address usr) public returns (bytes32 content) {
     require(exists(usr));
     uint idx = users[usr].contentIdx;
     users[usr].contentIdx += 1;
+    seen[users[usr].contents[idx]] = true;
     return users[usr].contents[idx];
   }
 

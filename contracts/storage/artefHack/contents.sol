@@ -10,19 +10,17 @@ contract ArtefHackContentStorage {
   }
 
   mapping(bytes32 => ArtefHackContent) public contents;
+  mapping(uint => bytes32) public existByCtlg;
   bytes32[] public index;
 
   function exists(bytes32 identifier) public constant returns(bool) {
     return (index.length != 0 && index[contents[identifier].idx] == identifier);
   }
 
-  function alreadybought(uint catalogueId) returns (bool) {
-    for (uint i = 0; i < contents.length; ++i) {
-      if (contents[i].catalogueId == catalogueId) {
-        return true
-      }
-    }
-    return false;
+  function alreadyBought(uint catalogueId) public returns (bool, bytes32) {
+    bytes32 c = existByCtlg[catalogueId];
+    bool b = (c != "");
+    return (b, c);
   }
 
   function insert(bytes32 identifier, uint catalogueId, uint preference) public returns(uint idx) {
@@ -30,10 +28,11 @@ contract ArtefHackContentStorage {
     contents[identifier].preference = preference;
     contents[identifier].catalogueId = catalogueId;
     contents[identifier].idx = index.push(identifier)-1;
+    existByCtlg[catalogueId] = identifier;
     return index.length-1;
   }
 
-  function get(bytes32 identifier) public constant returns(uint preference, uint idx) {
+  function get(bytes32 identifier) public constant returns(uint preference, uint catalogueId, uint idx) {
     require(exists(identifier));
 
     return(
@@ -53,7 +52,7 @@ contract ArtefHackContentStorage {
     return true;
   }
 
-  function count() returns(uint) {
+  function count() public returns(uint) {
     return index.length;
   }
 

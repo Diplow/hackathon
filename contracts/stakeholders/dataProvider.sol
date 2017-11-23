@@ -11,12 +11,12 @@ contract DataProvider is Role {
   	Balances private balances;
 	int public COST = 1;
 
-	function DataProvider(address _users, address _balances, address _roles) Role(_roles){
+	function DataProvider(address _users, address _balances, address _roles) Role(_roles) public {
 		users = Users(_users);
     	balances = Balances(_balances);
 	}
 
-	function buyUserData(address user) isRole('ArtefHack') returns (uint preference) {
+	function buyUserData(address user) isRole('ArtefHack') public returns (uint preference) {
 		require(users.exists(user));
 
 		uint res;
@@ -28,11 +28,11 @@ contract DataProvider is Role {
 		return res;
 	}
 
-	function insertUserData(uint preference, bool message) returns (uint idx) {
+	function insertUserData(uint preference, bool message) public returns (uint idx) {
 		return users.insert(tx.origin, preference, message);
 	}
 
-	function removeUserData() returns (bool success) {
+	function removeUserData() public returns (bool success) {
     	return users.remove(tx.origin);
   	}
 }
