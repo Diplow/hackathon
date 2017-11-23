@@ -29,13 +29,13 @@ contract ArtefHackUserStorage {
         users[addr].stage = 1;
       }
       else {
-        users[addr].preference = preference + 20;
+        users[addr].preference = preference + 10;
         users[addr].stage = 0;
       }
     }
     if (users[addr].stage == 1) {
       if (!score) {
-        users[addr].preference = preference - 11;
+        users[addr].preference = preference - 6;
         users[addr].stage = 2;
         users[addr].message = true;
       }
@@ -65,11 +65,6 @@ contract ArtefHackUserStorage {
 
   function addContent(address addr, bytes32 content) public returns(bool) {
     require(exists(addr));
-    for (uint i=0; i < users[addr].contents.length; ++i) {
-      if (users[addr].contents[i] == content) {
-        return false;
-      }
-    }
     uint idx = users[addr].contents.push(content)-1;
     users[addr].contentIdx = idx;
     return true;

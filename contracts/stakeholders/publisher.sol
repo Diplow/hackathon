@@ -32,11 +32,13 @@ contract Publisher is Role {
 
 	function buyContent(address _from, uint catalogueId) public returns (bytes32 content, uint pref) {
 		require(publisher > 0);
-		balances.pay(_from, publisher, int(PUBLISHER_COMPENSATION));
-		uint preference;
-		uint idx;
-		(preference, idx) = catalogue.get(catalogueId);
+		if (balances.pay(_from, publisher, int(PUBLISHER_COMPENSATION))) {
+			uint preference;
+			uint idx;
+			(preference, idx) = catalogue.get(catalogueId);
 
-		return (contents[catalogueId], preference);
+			return (contents[catalogueId], preference);
+		}
+		return ("", 0);
 	}
 }
