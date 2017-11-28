@@ -1,59 +1,54 @@
 pragma solidity ^0.4.4;
 
-import '../utils/roles.sol';
 import '../utils/utils.sol';
 
-// this is actually the same as a custom token
-// except that it is not ERC20 compatible
-contract AdvertiserBalances is Role {
 
-  mapping(address => uint) private balances;
-  address[] private index;
+contract Balances {
 
-  event LogUpdateBalance (address indexed advertiser, int updateAmount);
-
-  function fundContract() payable isRole('Advertiser') {
-		updateBalance(int(msg.value));
-	}
-
-  function payForDataUsage(address _from, uint amountToPay){
-    _from.transfer(amountToPay);
+  struct Balance {
+    int balance;
+    uint idx;
   }
 
-  function exists(address _from) public constant returns(bool isIndeed) {
-    if (index.length == 0) {return false;}
-    for(uint i=0; i<index.length; i++){
-      if(index[i] == _from){return true;}
+  address owner;
+  mapping(address => Balance) public balances;
+  address[] index;
+
+  function Balances() {
+    owner = tx.origin;
+  }
+
+  function fund(int value) public {
+    require(tx.origin == owner);
+    updateBalance(tx.origin, value);
+  }
+
+  function create(address addr) public {
+    require(!exists(addr));
+    balances[addr].idx = index.push(addr)-1;
+    balances[addr].balance = 0;
+  }
+
+  function pay(address from, address to, int value) public returns (bool success) {
+    if (!(exists(from) && balances[from].balance > value && exists(to))) {
+      return false;
     }
-    return false;
+    updateBalance(from, -value);
+    updateBalance(to, value);
+
+    return true;
   }
 
-  function getBalance(address _from) public constant returns (uint){
-    if(!exists(_from)){
-      return 0;
-    }
-    else {
-      return balances[_from];
-    }
+  function exists(address addr) constant returns(bool) {
+    return (index.length > 0 && index[balances[addr].idx] == addr);
   }
 
-  function hasSufficientFunds(address _from, uint amountToCompare) returns (bool){
-    return getBalance(_from) > amountToCompare;
+  function getBalance(address addr) returns(int) {
+    require(exists(addr));
+    return balances[addr].balance;
   }
 
-  //requires role verification so that only advertisers can fund the contract
-  //the balance cannot be negative
-  function updateBalance(int updateAmount){
-    if(exists(tx.origin)){
-      int newBalance = int(balances[tx.origin]) + updateAmount;
-      if(newBalance > 0){
-        balances[tx.origin] = uint(newBalance);
-      }
-    }
-    LogUpdateBalance(tx.origin, updateAmount);
-  }
-
-  function count() public constant returns(uint) {
-    return index.length;
+  function updateBalance(address addr, int updateAmount) private {
+      balances[addr].balance = balances[addr].balance + updateAmount;
   }
 }

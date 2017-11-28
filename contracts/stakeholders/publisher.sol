@@ -1,81 +1,43 @@
 pragma solidity ^0.4.4;
 
-import './advertiser.sol';
-import './dataProvider.sol';
-import '../storage/placements.sol';
-import '../storage/messages.sol';
-import '../storage/targetings.sol';
+import '../storage/catalogue.sol';
+import '../storage/balances.sol';
 import '../utils/roles.sol';
 import '../utils/utils.sol';
 
-contract Publisher is Role{
-	address public owner;
 
-	Advertiser private advertiser;
-	DataProvider private provider;
-	MessageStorage private messages;
-	PlacementStorage private placements;
-	TargetingStorage private targetings;
+contract Publisher is Role {
 
-	string DEFAULT_MESSAGE;
-	uint private baseUserPrice = 10;
-	uint private baseTargetingPrice = 50;
+	address public publisher;
+	Balances public balances;
+	Catalogue public catalogue;
+	bytes32[] public contents;
 
-	function Publisher(address _advertiser, address _messages, address _placements, address _provider, address _targetings) {
-		owner = tx.origin;
-		DEFAULT_MESSAGE = 'Nothing to print here :3';
-		advertiser = Advertiser(_advertiser);
-		placements = PlacementStorage(_placements);
-		messages = MessageStorage(_messages);
-		targetings = TargetingStorage(_targetings);
-		provider = DataProvider(_provider);
+	uint PUBLISHER_COMPENSATION = 50;
+
+	function Publisher(address _catalogue, address _balances, address _roles) Role(_roles){
+		catalogue = Catalogue(_catalogue);
+		balances = Balances(_balances);
 	}
 
-	// fallback function so that the publisher contract can receive funds
-	function() payable { }
-
-	// PUBLISHER INTERFACE
-
-	function createPlacement(string placementId, uint cost) isRole('Publisher') {
-		placements.upsert(Utils.stringToBytes32(placementId), tx.origin, cost);
+	function insertContent(bytes32 identifier, uint preference) isRole('Publisher') returns (uint idx) {
+		// TODO test indexes
+		uint res = contents.push(identifier)-1;
+		catalogue.insert(res, preference);
+		return res;
 	}
 
-	// ADVERTISER INTERFACE
-
-	function setupTargeting(string targetingId, string message, string placement, string audience) isRole('Advertiser') {
-		advertiser.payForDataUsage(tx.origin, address(this), baseTargetingPrice);
-		targetings.upsert(
-			tx.origin,
-			Utils.stringToBytes32(targetingId),
-			Utils.stringToBytes32(message),
-			Utils.stringToBytes32(placement),
-			Utils.stringToBytes32(audience),
-			true
-		);
+	function setPublisher(address _publisher) isRole('Admin') {
+		publisher = _publisher;
 	}
 
-	// USER INTERFACE
-	function visits(string placement) isRole('User') returns (bytes32) {
-		uint c = targetings.count();
-		for(uint i=0; i<c; i++){
-			address adv_t;
-			bytes32 plct;
-			bytes32 message;
-			bytes32 aud;
-			bool state;
-			uint idx;
-			(adv_t, plct, message, aud, state, idx) = targetings.get(targetings.getAt(i));
-			if (plct == Utils.stringToBytes32(placement)) {
-				if (provider.doesBelong(tx.origin, aud)) {
-				    address adv_m;
-				    bytes32 content;
-				    uint index;
-				    (adv_m, content, index) = messages.get(message);
-					advertiser.payForDataUsage(adv_t, tx.origin, baseUserPrice);
-					return content;
-				}
-			}
-		}
-		return Utils.stringToBytes32(DEFAULT_MESSAGE);
+	function buyContent(address _from, uint catalogueId) returns (bytes32 content, uint pref) {
+		require(publisher > 0);
+		balances.pay(_from, publisher, int(PUBLISHER_COMPENSATION));
+		uint preference;
+		uint idx;
+		(preference, idx) = catalogue.get(catalogueId);
+
+		return (contents[catalogueId], preference);
 	}
 }

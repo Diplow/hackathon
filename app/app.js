@@ -1,4 +1,5 @@
 
-import { firstLevel } from '../levels/first_level.js'
+import { simulate, log } from '../levels/simulate.js'
 
-window.firstLevel = firstLevel;
+window.simulate = simulate;
+window.log = log;
