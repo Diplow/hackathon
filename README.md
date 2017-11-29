@@ -1,15 +1,23 @@
-# truffle-init-webpack
-Example webpack project with Truffle. Includes contracts, migrations, tests, user interface and webpack build pipeline.
+# Artef'Hack 0
+First Artef'Hack organized by [Artefact](https://www.artefact.is)
 
-## Usage
+## Prerequisites
+install npm: https://www.npmjs.com/get-npm
+install virtualenv for a clean setup: https://virtualenv.pypa.io/en/stable/
+install python3
 
-install npm
-npm install -g ethereumjs-testrpc
+## Install Truffle to compile and deploy your contracts easily
+npm install -g truffle
 npm install
 
-## Building and the frontend
+## Install testrpc to run a local blockchain
+npm install -g ethereumjs-testrpc
+testrpc
 
-1. First run `truffle compile`, then run `truffle migrate` to deploy the contracts onto your network of choice (default "development").
-1. Then run `npm run dev` to build the app and serve it on http://localhost:8080
+## Compile your contract and deploy it to your local blockchain. A 'build' directory should have appeared after this step.
+truffle migrate
 
-## Common Errors
+## Setup the python3 environment
+virtualenv -p python3 ~/.venv-py3
+source ~/.venv-py3/bin/activate
+pip install web3
