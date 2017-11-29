@@ -1,4 +1,3 @@
-
 SATISFACTION_TO_GROW_USER_BASE = 3
 FAILURES_TO_REDUCE_USER_BASE = 5
 AD_VIEW_PRICE = 10
@@ -17,7 +16,7 @@ def one_day(contract_instances, accounts, current_users, users, users_involved, 
         if current_users[u]['satisfaction'] >= 0:
             # the user interacts with our platform
             visited_content, message = visit(contract_instances, accounts[int(u)], accounts[3], accounts[1])
-            evaluate(contract_instances, visited_content, accounts[int(u)], u, users_contents_matrix)
+            evaluate(contract_instances, visited_content, message, accounts[int(u)], u, users_contents_matrix)
 
             # update output variables
             daily_visits += 1
@@ -41,10 +40,10 @@ def one_day(contract_instances, accounts, current_users, users, users_involved, 
 
 def visit(contract_instances, user_address, advertiser_address, artefhack_address):
     # call to get the results of our query
-    visited_content, message = contract_instances['ArtefHack'].call({'from':user_address, 'gas': 4000000}).visit()
+    visited_content, message = contract_instances['ArtefHack'].call({'from':user_address, 'gas': 10000000}).visit()
     # transaction to insert our query in the blockchain
     # max gas cost is high to prevent the arbitrary complicated implementations of candidates to run out of gas ;)
-    contract_instances['ArtefHack'].transact({'from':user_address, 'gas': 4000000}).visit()
+    contract_instances['ArtefHack'].transact({'from':user_address, 'gas': 10000000}).visit()
 
     # the advertiser pays ArtefHack if a message is shown
     if message:
@@ -55,10 +54,11 @@ def visit(contract_instances, user_address, advertiser_address, artefhack_addres
 
     return (visited_content, message)
 
-def evaluate(contract_instances, visited_content, user_address, user_index, users_contents_matrix):
-    contract_instances['ArtefHack'].transact({'from': user_address, 'gas': 100000}).eval(
+def evaluate(contract_instances, visited_content, message, user_address, user_index, users_contents_matrix):
+    contract_instances['ArtefHack'].transact({'from': user_address, 'gas': 10000000}).eval(
         visited_content,
-        users_contents_matrix[user_index][visited_content.replace('\x00', '')]
+        message,
+        users_contents_matrix[user_index][visited_content.replace('\x00', '')] == 1
     )
 
 def update_contents(visited_content, current_contents):

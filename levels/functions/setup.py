@@ -16,8 +16,8 @@ def verify_input_arguments(starting_users_count, max_users_count, days_count, co
 		raise ValueError("There must be between 1 and 1000 total users in the simulation")
 	if starting_users_count > max_users_count:
 		raise ValueError("There can't be more users at the start of the simulation than the total number of users")
-	if contents_count <= 0 or contents_count > 400:
-		raise ValueError("There must be between 1 and 400 users")
+	if contents_count <= 0 or contents_count > 800:
+		raise ValueError("There must be between 1 and 800 users")
 
 def contract_deploy_data(contract):
 	with open('../build/contracts/{}.json'.format(contract)) as f:
@@ -27,7 +27,7 @@ def contract_deploy_data(contract):
 def setup_contract_instances(web3):
     contract_metadata = {}
     contract_instances = {}
-    for el in ['ArtefHack', 'Balances', 'DataProvider', 'Publisher', 'RolesStorage']:
+    for el in ['ArtefHack', 'Balances', 'Publisher', 'RolesStorage']:
         contract_metadata[el] = contract_deploy_data(el)
         network_id = list(contract_metadata[el]["networks"].keys())[-1]
         contract_instances[el] = web3.eth.contract(
@@ -47,15 +47,6 @@ def setup_users(whole_dataset, count, overhead=0):
     	data[str(i)] = {}
     	data[str(i)] = whole_dataset[str(i)]
     return data
-
-def insert_users(contract_instances, users, accounts):
-    for el in users:
-    	contract_instances['DataProvider'].transact(
-			{'from': accounts[int(el)],'gas': 200000}
-		).insertUserData(
-    		users[el]['preference'],
-    		users[el]['message']
-		)
 
 def insert_contents(contract_instances, contents, accounts):
     for el in contents:
@@ -89,7 +80,7 @@ def set_balances(contract_instances, accounts, users_count):
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':200000}).fund(1000000)
 
 	# set initial balance for stakeholders
-	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[1], 1000)
+	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[1], 2500)
 	contract_instances['Balances'].transact({'from': accounts[0], 'gas':100000}).pay(accounts[0], accounts[3], 50000)
 
 	# set initial balance for all other users

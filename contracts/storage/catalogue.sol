@@ -11,6 +11,7 @@ contract Catalogue {
     }
 
   mapping(uint => PublicContent) public publicContents;
+  mapping(uint => uint[]) public contentsByPref;
   uint[] public index;
 
   function exists(uint identifier) public constant returns(bool) {
@@ -21,7 +22,16 @@ contract Catalogue {
     require(!exists(identifier));
     publicContents[identifier].preference = preference;
     publicContents[identifier].idx = index.push(identifier)-1;
+    contentsByPref[preference].push(identifier);
     return index.length-1;
+  }
+
+  function getByPrefAt(uint pref, uint idx) public returns (uint) {
+    return contentsByPref[pref][idx];
+  }
+
+  function getByPrefCount(uint pref) public returns (uint len) {
+    return contentsByPref[pref].length;
   }
 
   function get(uint identifier) public constant returns(uint preference, uint idx) {
