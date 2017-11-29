@@ -6,17 +6,49 @@ contract ArtefHackUserStorage {
   struct ArtefHackUser {
     bool message;
     uint preference;
-    // bytes32[] contents;
-    // uint contentIdx;
+    bytes32[] contents;
+    uint contentIdx;
+    uint stage;
     uint idx;
   }
 
   // bytes32[] private initContents;
   mapping(address => ArtefHackUser) private users;
+  mapping(bytes32 => bool) public seen;
   address[] private index;
 
   function exists(address addr) public constant returns(bool) {
     return (index.length != 0 && index[users[addr].idx] == addr);
+  }
+
+  function updatePref(address addr, bool score, bool message, uint preference) public {
+    require(exists(addr));
+    if (users[addr].stage == 0) {
+      if (score) {
+        users[addr].preference = preference;
+        users[addr].stage = 1;
+        users[addr].message = true;
+      }
+      else {
+        users[addr].preference = preference + 20;
+        users[addr].stage = 0;
+      }
+    }
+    if (users[addr].stage == 1) {
+      users[addr].message = score;
+      users[addr].stage = 2;
+    }
+    if (users[addr].stage == 2) {
+      if (!score) {
+        users[addr].preference = preference - 11;
+        users[addr].stage = 3;
+      }
+    }
+  }
+
+  function hasSeen(address usr, bytes32 content) public returns (bool) {
+    require(exists(usr));
+    return seen[content];
   }
 
   function insert(address addr, uint preference, bool message) public returns(uint idx) {
@@ -24,21 +56,27 @@ contract ArtefHackUserStorage {
 
     users[addr].preference = preference;
     users[addr].message = message;
-    // users[addr].contents = initContents(addr);
-    // users[addr].contentIdx = 0;
+    //users[addr].contents = initContents(addr);
+    //users[addr].contentIdx = 0;
     users[addr].idx = index.push(addr)-1;
 
     return index.length-1;
   }
 
-  function initContents() {
-
+  function addContent(address addr, bytes32 content) public returns(bool) {
+    require(exists(addr));
+    uint idx = users[addr].contents.push(content)-1;
+    users[addr].contentIdx = idx;
+    return true;
   }
 
-  // function getContent(address addr) returns (bytes32 content) {
-  //   require(exists(addr));
-  //   return users[addr].contents[users[addr].contentIdx];
-  // }
+  function getContent(address usr) public returns (bytes32 content) {
+    require(exists(usr));
+    uint idx = users[usr].contentIdx;
+    users[usr].contentIdx += 1;
+    seen[users[usr].contents[idx]] = true;
+    return users[usr].contents[idx];
+  }
 
   function get(address addr) public constant returns(uint preference, bool message, uint idx) {
     require(exists(addr));

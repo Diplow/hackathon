@@ -1,3 +1,4 @@
+
 import click
 from web3 import Web3, HTTPProvider
 
@@ -48,11 +49,6 @@ def run(setup, starting_users_count, max_users_count, days_count, contents_count
 		print('Done! Roles have been set for the stakeholders and {} users'.format(len(users)))
 		print('')
 
-		print('Inserting users...')
-		insert_users(contract_instances, users, accounts)
-		print('Done! {} users have been created'.format(len(users)))
-		print('')
-
 		# make contents available in the catalogue
 		print('Inserting contents...')
 		insert_contents(contract_instances, contents, accounts)
@@ -67,7 +63,7 @@ def run(setup, starting_users_count, max_users_count, days_count, contents_count
 		print('Setting and funding balances')
 		set_balances(contract_instances, accounts, max_users_count)
 		print('Done! Balances have been created for the stakeholders and {} users'.format(max_users_count))
-		print('ArtefHack received 1000 tokens, the Advertiser received 50000 tokens, and each user received 50 tokens')
+		print('ArtefHack received 2500 tokens, the Advertiser received 50000 tokens, and each user received 50 tokens')
 		print('')
 
 
@@ -103,4 +99,4 @@ def run(setup, starting_users_count, max_users_count, days_count, contents_count
 	)
 
 if __name__ == '__main__':
-    run()
+	run()
